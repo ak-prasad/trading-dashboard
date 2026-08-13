@@ -1,0 +1,84 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modalContentDark {
+   background:
+    radial-gradient(circle at 8% 4%, rgba(16, 185, 129, 0.16), transparent 28rem),
+    radial-gradient(circle at 96% 90%, rgba(59, 130, 246, 0.13), transparent 25rem),
+    #09111f;
+  border: 1px solid #1f2937;
+  width: 100%;
+  max-width: 640px;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+.modalContentLight {
+  background:
+    radial-gradient(circle at 8% 4%, rgba(16, 185, 129, 0.11), transparent 28rem),
+    radial-gradient(circle at 96% 90%, rgba(59, 130, 246, 0.1), transparent 25rem),
+    #f6f8fc;
+  border: 1px solid #e2e8f0;
+  width: 100%;
+  max-width: 640px;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.inputDark {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 14px;
+  border: 1px solid #1f2937;
+  background-color: #1116253d;
+  color: #ffffff;
+  font-size: 13px;
+  outline: none;
+}
+
+.inputLight {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  background-color: #f8fafc5c;
+  color: #0f172a;
+  font-size: 13px;
+  outline: none;
+}
+
+.inputDark:focus, .inputLight:focus {
+  border-color: #10b981;
+}
+
+/* Responsive Form Grid */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Mobile: Date & Broker only in 1 row, rest single row (full width) */
+@media (max-width: 639px) {
+  .formGrid > div:not(:nth-child(1)):not(:nth-child(2)) {
+    grid-column: span 2;
+  }
+}
+
+/* Desktop: Trade single row, rest 2 columns */
+@media (min-width: 640px) {
+  .tradeField {
+    grid-column: span 2;
+  }
+}

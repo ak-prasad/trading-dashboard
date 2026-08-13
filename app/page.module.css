@@ -1,0 +1,167 @@
+.loginContainer {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dark Theme Colors */
+.darkTheme {
+  background-color: #0b0f19;
+  color: #ffffff;
+}
+.darkTheme .loginCard {
+  background-color: #111625;
+  border: 1px solid #1f2937;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+.darkTheme .inputBox {
+  background-color: #151c2e;
+  border: 1px solid #2d3748;
+  color: white;
+}
+.darkTheme .featureBox {
+  background: rgba(17, 22, 37, 0.6);
+  border: 1px solid #1f2937;
+}
+
+/* Light Theme Colors */
+.lightTheme {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+.lightTheme .loginCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+}
+.lightTheme .inputBox {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+}
+.lightTheme .featureBox {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #e2e8f0;
+}
+
+/* Panels Layout */
+.leftHeroPanel {
+  display: none;
+  width: 50%;
+  max-width: 650px;
+  padding: 60px 50px;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .leftHeroPanel {
+    display: flex;
+  }
+}
+
+.rightFormPanel {
+  width: 100%;
+  max-width: 550px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .rightFormPanel {
+    width: 50%;
+  }
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 400px;
+  padding: 32px;
+  border-radius: 24px;
+}
+
+.inputBox {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 14px 10px 40px;
+  border-radius: 12px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.inputBox:focus {
+  border-color: #10b981;
+}
+
+.loginButton {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+}
+
+.googleButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid currentColor;
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+.featureBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+}
+
+/* Premium visual layer shared with the dashboard routes. */
+.darkTheme {
+  background:
+    radial-gradient(circle at 8% 4%, rgba(16, 185, 129, 0.16), transparent 28rem),
+    radial-gradient(circle at 96% 90%, rgba(59, 130, 246, 0.13), transparent 25rem),
+    #09111f;
+}
+
+.lightTheme {
+  background:
+    radial-gradient(circle at 8% 4%, rgba(16, 185, 129, 0.11), transparent 28rem),
+    radial-gradient(circle at 96% 90%, rgba(59, 130, 246, 0.1), transparent 25rem),
+    #f6f8fc;
+}
+
+.darkTheme .loginCard,
+.darkTheme .featureBox {
+  border-color: rgba(148, 163, 184, 0.15);
+  background: rgba(14, 25, 43, 0.76);
+  backdrop-filter: blur(18px);
+}
+
+.lightTheme .loginCard,
+.lightTheme .featureBox {
+  border-color: rgba(30, 41, 59, 0.1);
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(18px);
+}

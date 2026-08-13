@@ -1,0 +1,466 @@
+.container {
+  --bg: #f6f8fc;
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-solid: #ffffff;
+  --text: #172033;
+  --muted: #778198;
+  --line: rgba(28, 43, 74, 0.1);
+  --soft: #f1f4fa;
+  --shadow: 0 18px 50px rgba(30, 48, 85, 0.08);
+
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  padding: 24px; /* Desktop ke liye standard 24px */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 8% 3%, rgba(16, 185, 129, 0.12), transparent 25rem),
+    radial-gradient(circle at 96% 8%, rgba(59, 130, 246, 0.11), transparent 23rem),
+    var(--bg);
+  box-sizing: border-box;
+}
+
+.darkTheme {
+  --bg: #09111f;
+  --surface: rgba(14, 25, 43, 0.78);
+  --surface-solid: #101b2f;
+  --text: #eef4ff;
+  --muted: #93a0b8;
+  --line: rgba(162, 184, 219, 0.12);
+  --soft: rgba(255, 255, 255, 0.045);
+  --shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 2px 4px;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: clamp(24px, 2.3vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.pageSubtitle {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.kpiCardDark,
+.kpiCardLight {
+  position: relative;
+  overflow: hidden;
+  min-height: 100px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.kpiCardDark::after,
+.kpiCardLight::after {
+  content: "";
+  position: absolute;
+  top: -48px;
+  right: -35px;
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.18), transparent 68%);
+  pointer-events: none;
+}
+
+.kpiCardDark:hover,
+.kpiCardLight:hover {
+  transform: translateY(-3px);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.kpiLabel {
+  position: relative;
+  z-index: 1;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.kpiValue {
+  position: relative;
+  z-index: 1;
+  margin: 15px 0 0;
+  color: var(--text);
+  font-size: clamp(21px, 2vw, 27px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgba(30, 48, 85, 0.04);
+  backdrop-filter: blur(16px);
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  background: var(--soft);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.searchBox:focus-within {
+  border-color: rgba(16, 185, 129, 0.7);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.searchInput {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: var(--text);
+  font-size: 13px;
+  background: transparent;
+}
+
+.searchInput::placeholder {
+  color: var(--muted);
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.statusToggle {
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--soft);
+}
+
+.statusBtn {
+  padding: 5px 11px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  background: transparent;
+  transition: all 160ms ease;
+}
+
+.statusBtn:hover {
+  color: var(--text);
+}
+
+.activeStatus {
+  color: #ffffff;
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 5px 14px rgba(5, 150, 105, 0.3);
+}
+
+.contentSection {
+  min-width: 0;
+}
+
+.desktopTableWrapper {
+  display: none;
+}
+
+.mobileCardList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tableContainerDark,
+.tableContainerLight {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+
+.table th { 
+  padding: 14px 20px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--soft);
+  border-bottom: 1px solid var(--line);
+}
+
+.table td {
+  padding: 11px 20px;
+  color: var(--text);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.tableRow {
+  transition: background 160ms ease;
+}
+
+.tableRow:last-child td {
+  border-bottom: 0;
+}
+
+.tableRow:hover {
+  background: rgba(16, 185, 129, 0.055);
+}
+
+.lightTheme .table td[class*="text-white"] {
+  color: var(--text) !important;
+}
+
+.lightTheme .table td[class*="text-gray-400"],
+.lightTheme .mobileCardBody [class*="text-gray-400"],
+.lightTheme .mobileCardFooter [class*="text-gray-400"] {
+  color: var(--muted) !important;
+}
+
+.mobileCardDark,
+.mobileCardLight {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.mobileCardHeader,
+.mobileCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobileCardHeader {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.mobileCardFooter {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.mobileTradeName {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mobileDateText {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.mobileCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+}
+
+.mobileInfoRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.brokerBadge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 5px 9px;
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 7px;
+  color: #60a5fa;
+  font-size: 10px;
+  font-weight: 750;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.pnlBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.profitBadge {
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.13);
+}
+
+.lossBadge {
+  color: #fb7185;
+  background: rgba(244, 63, 94, 0.12);
+}
+
+.emptyStateContainer {
+  padding: 70px 24px;
+  border: 1px dashed var(--line);
+  border-radius: 20px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+  background: var(--surface);
+}
+
+.paginationContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 13px;
+  padding: 18px 4px 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.paginationButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageNavBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--surface);
+  transition: all 160ms ease;
+}
+
+.pageNavBtn:hover:not(:disabled) {
+  border-color: rgba(16, 185, 129, 0.55);
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.pageNavBtn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.pageNumberIndicator {
+  padding: 0 5px;
+  color: var(--text);
+  font-weight: 750;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .kpiGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .toolbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .searchBox {
+    width: 310px;
+  }
+
+  .filterGroup {
+    justify-content: flex-end;
+  }
+
+  .desktopTableWrapper {
+    display: block;
+  }
+
+  .mobileCardList {
+    display: none;
+  }
+
+  .paginationContainer {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 12px; /* Mobile ke liye kam padding taaki content khula-khula lage */
+  }
+
+  .filterGroup {
+    align-items: stretch;
+  }
+
+  .statusBtn {
+    padding-inline: 8px;
+  }
+}

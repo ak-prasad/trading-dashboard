@@ -1,0 +1,392 @@
+.cardDark {
+  background-color: #111625;
+  border: 1px solid #1f2937;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.cardLight {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.cardTitleText {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+}
+
+.perfHeaderBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.perfHeaderRightControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.perfOverviewHeader {
+  margin-top: 4px;
+}
+
+.perfSubTitle {
+  font-size: 13px;
+  opacity: 0.6;
+} 
+
+.perfMainVal {
+  font-size: 24px;
+  font-weight: 800;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.perfPercentage {
+  font-size: 13px;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.pnlToggleTabs {
+  display: flex;
+  background-color: rgba(150, 150, 150, 0.1);
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+}
+
+.pnlTabBtn {
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  opacity: 0.7;
+  transition: all 0.2s;
+}
+
+.pnlTabActive {
+  background-color: #10b981;
+  color: #ffffff;
+  opacity: 1;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.expandBtnInline {
+  background: transparent;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.expandBtnInline:hover {
+  opacity: 1;
+  background-color: rgba(150, 150, 150, 0.1);
+}
+
+.perfChartContainer {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.yAxisLabels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 10px;
+  opacity: 0.5;
+  text-align: right;
+  padding-right: 6px;
+  box-sizing: border-box;
+  /* Grid lines ke padding/height ke sath exact match karne ke liye */
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+.chartWithXAxisWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.perfLineVisual {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.03) 0%, rgba(16, 185, 129, 0.12) 100%);
+  border-radius: 12px;
+  overflow: visible;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.expandedChartCard {
+  position: fixed;
+  top: 15px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  width: auto;
+  height: auto;
+  z-index: 99999;
+  border-radius: 16px;
+  padding: 20px 24px;
+  background-color: #0b0f19;
+  display: flex;
+  flex-direction: column;
+}
+
+.svgChart {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.perfXAxisExternal {
+  position: relative;
+  width: 100%;
+  height: 20px;
+}
+
+.xAxisLabelItem {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 10px;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+.perfLegendRow {
+  display: flex;
+  gap: 20px;
+  margin-top: 12px;
+  font-size: 11px;
+  opacity: 0.8;
+  align-items: center;
+}
+
+.perfLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dotProfit {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dotLoss {
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.lineIndicator {
+  width: 16px;
+  height: 2px;
+  background-color: #10b981;
+  display: inline-block;
+}
+
+.chartHoverTooltip {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 11px;
+  z-index: 1000;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: fadeInTooltip 0.15s ease-in-out;
+}
+
+.tooltipDark {
+  background-color: #111625;
+  color: #ffffff;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.tooltipLight {
+  background-color: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.tooltipHoverDate {
+  font-size: 10px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+@keyframes fadeInTooltip {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.profitText {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.lossText {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.htmlDotsOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.absoluteDotWrapper {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  pointer-events: auto;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.perfectCircleDot {
+  border-radius: 50%;
+  transition: width 0.15s ease, height 0.15s ease, transform 0.15s ease;
+}
+
+.absoluteDotWrapper:hover .perfectCircleDot {
+  transform: scale(1.3);
+}
+
+/* Dashboard premium card surface. */
+.cardDark,
+.cardLight {
+  border-color: rgba(148, 163, 184, 0.14);
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(16px);
+}
+
+.cardDark {
+  background: rgba(14, 25, 43, 0.76);
+}
+
+.cardLight {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.perfLineVisual {
+  border-color: rgba(16, 185, 129, 0.25);
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.04), rgba(16, 185, 129, 0.12));
+}
+
+@media (max-width: 768px) {
+  /* Card ko relative banayein taaki expand button corner me fix ho sake */
+  .cardDark, .cardLight {
+    position: relative;
+    padding-top: 30px !important;
+  }
+
+  /* Expand Button: Top Right Corner fix */
+  .expandBtnInline {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+  }
+
+  .perfHeaderBox {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* P&L Toggle Buttons: Width 100% karke text ko proper space denge */
+  .pnlToggleTabs {
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
+  }
+  
+  .pnlTabBtn {
+    flex: 1;
+    white-space: nowrap; 
+    padding: 6px 12px; 
+    font-size: 10px !important;
+  }
+
+  /* Dropdown aur controls row alignment */
+  .perfHeaderRightControls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .perfHeaderRightControls > div {
+    flex: 1;
+  }
+  .perfHeaderRightControls select, 
+  .perfHeaderRightControls button:not(.expandBtnInline),
+  .perfHeaderRightControls [class*="dropdown"] {
+  
+    font-size: 11px !important;   /* Text size chhota kiya */
+    padding: 6px 8px !important;  /* Padding adjust ki */
+  }
+
+  /* Dropdown ke icon/text alignment */
+  .perfHeaderRightControls {
+    gap: 120px; 
+  }
+}

@@ -1,0 +1,534 @@
+.container {
+  --bg: #f6f8fc;
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-solid: #ffffff;
+  --text: #172033;
+  --muted: #778198;
+  --line: rgba(28, 43, 74, 0.1);
+  --soft: #f1f4fa;
+  --shadow: 0 18px 50px rgba(30, 48, 85, 0.08);
+
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  padding: 24px; /* Desktop padding 24px fix */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 8% 3%, rgba(16, 185, 129, 0.12), transparent 25rem),
+    radial-gradient(circle at 96% 8%, rgba(59, 130, 246, 0.11), transparent 23rem),
+    var(--bg);
+  box-sizing: border-box;
+}
+
+.darkTheme {
+  --bg: #09111f;
+  --surface: rgba(14, 25, 43, 0.78);
+  --surface-solid: #101b2f;
+  --text: #eef4ff;
+  --muted: #93a0b8;
+  --line: rgba(162, 184, 219, 0.12);
+  --soft: rgba(255, 255, 255, 0.045);
+  --shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 2px 4px;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: clamp(24px, 2.3vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.pageSubtitle {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Filter Card jiska dropdown upar dikhe */
+.filterCardDark,
+.filterCardLight {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 58px;
+  padding: 12px 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+/* Table Wrapper jisse content overlap na ho */
+.tableWrapperDark,
+.tableWrapperLight {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+/* Summary Grid matching Trades KPI Grid size */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cardDark,
+.cardLight {
+  position: relative;
+  overflow: hidden;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.cardDark::after,
+.cardLight::after {
+  content: "";
+  position: absolute;
+  top: -48px;
+  right: -35px;
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.18), transparent 68%);
+  pointer-events: none;
+}
+
+.cardDark:hover,
+.cardLight:hover {
+  transform: translateY(-3px);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.cardHeader {
+  position: relative;
+  z-index: 1;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cardValue {
+  position: relative;
+  z-index: 1;
+  margin: 15px 0 0;
+  color: var(--text);
+  font-size: clamp(21px, 2vw, 27px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+
+.cardSubText {
+  position: relative;
+  z-index: 1;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.tableTitleBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 52px;
+  padding: 14px 20px;
+  background: var(--soft);
+  border-bottom: 1px solid var(--line);
+}
+
+.tableTitleBar h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.entryCount {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 7px;
+  color: #60a5fa;
+  font-size: 10px;
+  font-weight: 750;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.tableContainer {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.tableHeaderDark,
+.tableHeaderLight {
+  background: var(--soft);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.tableHeaderDark th,
+.tableHeaderLight th {
+  padding: 14px 20px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tableRowDark,
+.tableRowLight {
+  border-bottom: 1px solid var(--line);
+  transition: background 160ms ease;
+}
+
+.tableRowDark:hover,
+.tableRowLight:hover {
+  background: rgba(16, 185, 129, 0.055);
+}
+
+.tableCell {
+  padding: 11px 20px;
+  color: var(--text);
+}
+
+.boldText {
+  font-weight: 750;
+}
+
+.profitText {
+  color: #34d399;
+}
+
+.lossText {
+  color: #fb7185;
+}
+
+.investText {
+  color: #60a5fa;
+}
+
+.withdrawalText {
+  color: #facc15;
+}
+
+.brokerageText {
+  color: #c084fc;
+}
+
+.emptyCell {
+  padding: 40px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.desktopTableOnly {
+  display: block;
+}
+
+.mobileCardList {
+  display: none;
+}
+
+/* Badges matching Trades */
+.brokerBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 6px;
+  color: #60a5fa;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.pnlBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 11px;
+}
+
+.profitBadge {
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.13);
+}
+
+.lossBadge {
+  color: #fb7185;
+  background: rgba(244, 63, 94, 0.12);
+}
+
+/* Pagination matching Trades */
+.paginationContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 13px;
+  padding: 10px 4px 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.paginationButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageNavBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--surface);
+  transition: all 160ms ease;
+}
+
+.pageNavBtn:hover:not(:disabled) {
+  border-color: rgba(16, 185, 129, 0.55);
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.pageNavBtn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.pageNumberIndicator {
+  padding: 0 5px;
+  color: var(--text);
+  font-weight: 750;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .container {
+    padding: 24px; /* Desktop padding 24px */
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .desktopTableOnly {
+    display: block;
+  }
+
+  .mobileCardList {
+    display: none;
+  }
+
+  .paginationContainer {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 767px) {
+  .container {
+    padding: 14px; /* Mobile padding 14px */
+    gap: 14px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .desktopTableOnly {
+    display: none !important;
+  }
+
+  .mobileCardList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 3px;
+  }
+
+  .summaryGrid > div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .cardLight.investCard::before,
+  .cardDark.investCard::before {
+    content: "";
+    position: absolute;
+    top: -48px;
+    right: -35px;
+    width: 120px;
+    height: 120px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.18), transparent 68%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .cardLight.investCard::after {
+    content: var(--currency-symbol, "₹");
+    position: absolute;
+    right: -35px;
+    top: -28px;
+    font-size: 100px;
+    font-weight: 900;
+    pointer-events: none;
+    color: #0f172a;
+    opacity: 0.08;
+  }
+
+  .cardDark.investCard::after {
+    content: var(--currency-symbol, "₹");
+    position: absolute;
+    right: -35px;
+    top: -28px;
+    font-size: 100px;
+    font-weight: 900;
+    pointer-events: none;
+    color: #ffffff;
+    opacity: 0.04;
+  }
+
+  .cardDark,
+  .cardLight {
+    min-height: 90px;
+    padding: 14px;
+  }
+
+  .cardValue {
+    margin-top: 10px;
+    font-size: 19px;
+  }
+
+  .mobileCardDark,
+  .mobileCardLight {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  .mobileCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+  }
+
+  .mobileTradeTitle {
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+   .mobileBrokerageSmall{
+    font-size: 10px;
+  }
+
+  .mobileDateText {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .mobileCardBody {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 11px;
+  }
+
+  .mobileInfoRow {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .mobileCardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--line);
+    padding-top: 8px;
+  }
+
+  .emptyCellMobile {
+    text-align: center;
+    padding: 30px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+}

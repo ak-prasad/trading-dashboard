@@ -1,0 +1,89 @@
+.headerDark {
+  background-color: rgba(11, 15, 25, 0.85);
+  border-bottom: 1px solid rgba(31, 41, 55, 0.8);
+  backdrop-filter: blur(12px);
+}
+
+.headerLight {
+  background-color: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid #e2e8f0;
+  backdrop-filter: blur(12px);
+}
+
+.mobileMenuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid #374151;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+}
+
+@media (min-width: 1024px) {
+  .mobileMenuBtn {
+    display: none; /* Desktop par menu button hide ho jayega */
+  }
+}
+
+.dateBadgeDark {
+  display: none;
+  border: 1px solid #1f2937;
+  background-color: #111625;
+  color: #d1d5db;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.dateBadgeLight {
+  display: none;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  color: #334155;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+/* Shared premium navigation finish. */
+.headerDark {
+  background: rgba(9, 17, 31, 0.76);
+  border-color: rgba(148, 163, 184, 0.13);
+  box-shadow: 0 6px 24px rgba(2, 6, 23, 0.16);
+  backdrop-filter: blur(18px);
+}
+
+.headerLight {
+  background: rgba(255, 255, 255, 0.74);
+  border-color: rgba(30, 41, 59, 0.09);
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.05);
+  backdrop-filter: blur(18px);
+}
+
+.mobileMenuBtn,
+.dateBadgeDark,
+.dateBadgeLight {
+  border-color: rgba(148, 163, 184, 0.16);
+  border-radius: 14px;
+}
+
+.dateBadgeDark {
+  background: rgba(14, 25, 43, 0.78);
+}
+
+.dateBadgeLight {
+  background: rgba(248, 250, 252, 0.78);
+}
+
+@media (min-width: 768px) {
+  .dateBadgeDark, .dateBadgeLight {
+    display: flex;
+  }
+}

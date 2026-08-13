@@ -1,0 +1,185 @@
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.leftColumn > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardDark {
+  background-color: #111625;
+  border: 1px solid #1f2937;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.cardLight {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.totalAssetsCard {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardLight.totalAssetsCard::after {
+  content: var(--currency-symbol, "₹");
+  position: absolute;
+  right: 25px;
+  top: -20px;
+  font-size: 140px;
+  font-weight: 980;
+  pointer-events: none;
+  color: #0f172a;
+  opacity: 0.05;
+}
+
+.cardDark.totalAssetsCard::after {
+  content: var(--currency-symbol, "₹");
+  position: absolute;
+  right: 25px;
+  top: -20px;
+  font-size: 140px;
+  font-weight: 980;
+  pointer-events: none;
+  color: #ffffff;
+  opacity: 0.03;
+}
+
+.cardHeaderTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.cardTitleText {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+}
+
+.mainAssetValue {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+
+.growthBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+  padding: 4px 10px;
+  border-radius: 8px;
+  width: fit-content;
+  margin-bottom: 15px;
+}
+
+.growthSub {
+  opacity: 0.8;
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+.distributionSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  border-top: 1px solid rgba(150, 150, 150, 0.1);
+  padding-top: 20px;
+}
+
+.distributionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
+.progressBarWrapper {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  gap: 3px;
+  background-color: rgba(128, 128, 128, 0.1);
+  margin-bottom: 6px;
+}
+
+.distributionLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 145px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-right: 2px;
+}
+
+.distributionLegend::-webkit-scrollbar {
+  display: none;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  position: relative;
+}
+
+.dotStock {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.legendVal {
+  margin-left: auto;
+  font-weight: 700;
+}
+
+.emptyBrokerText {
+  font-size: 14px;
+  opacity: 0.5;
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* Dashboard premium card surface. */
+.cardDark,
+.cardLight {
+  border-color: rgba(148, 163, 184, 0.14);
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(16px);
+}
+
+.cardDark {
+  background: rgba(14, 25, 43, 0.76);
+}
+
+.cardLight {
+  background: rgba(255, 255, 255, 0.8);
+}

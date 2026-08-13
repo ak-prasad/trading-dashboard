@@ -1,0 +1,83 @@
+.dashboardLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.darkTheme {
+  background-color: #0b0f19;
+  color: #ffffff;
+}
+
+.lightTheme {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.headerWrapper {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.bodyContainer {
+  display: flex;
+  flex: 1;
+  width: 100%; 
+  position: relative;
+  align-items: flex-start;
+}
+
+.mainContentArea {
+  flex: 1;
+  width: 100%;
+  min-width: 0; /* Prevents flex items from overflowing */
+  box-sizing: border-box;
+}
+
+/* Shared premium canvas for every dashboard route. */
+.darkTheme {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(16, 185, 129, 0.1), transparent 26rem),
+    radial-gradient(circle at 100% 16%, rgba(59, 130, 246, 0.1), transparent 26rem),
+    #09111f;
+}
+
+.lightTheme {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(16, 185, 129, 0.1), transparent 26rem),
+    radial-gradient(circle at 100% 16%, rgba(59, 130, 246, 0.09), transparent 26rem),
+    #f6f8fc;
+}
+
+/* ==========================================================
+   GLOBAL PAGE CONTAINER & LAYOUT STYLES
+   ========================================================== */
+
+:root {
+  --page-padding-desktop: 28px;
+  --page-padding-mobile: 16px;
+}
+
+/* Common wrapper for all main pages */
+.global-container {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  width: 100%;
+  padding: var(--page-padding-desktop);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Mobile View Responsive Padding */
+@media (max-width: 768px) {
+  .global-container {
+    padding: var(--page-padding-mobile);
+    gap: 14px;
+  }
+}
