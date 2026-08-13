@@ -351,42 +351,42 @@
     gap: 12px;
   }
 
-  /* P&L Toggle Buttons: Width 100% karke text ko proper space denge */
-  .pnlToggleTabs {
+  /* Controls row alignment: Dropboard aur buttons ko ek hi line me lane ke liye */
+  .perfHeaderRightControls {
+    display: flex;
+    flex-direction: row !important; /* Row me set karein */
+    align-items: center;
+    justify-content: space-between; /* Beech me space balance karein */
+    gap: 8px !important; /* Zyada gap hata kar chhota gap dein */
     width: 100%;
+  }
+
+  /* Dropdown ki width fix karein taaki wo overlap na kare */
+  .perfHeaderRightControls > div:first-child {
+    flex: 0 0 auto;
+    width: 90px; /* Dropdown ke liye fix width */
+  }
+
+  /* P&L Toggle Tabs ko bachi hui jagah dene ke liye */
+  .pnlToggleTabs {
+    flex: 1;
     display: flex;
     box-sizing: border-box;
+    margin: 0;
   }
   
   .pnlTabBtn {
     flex: 1;
     white-space: nowrap; 
-    padding: 6px 12px; 
+    padding: 6px 8px; 
     font-size: 10px !important;
+    text-align: center;
   }
 
-  /* Dropdown aur controls row alignment */
-  .perfHeaderRightControls {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .perfHeaderRightControls > div {
-    flex: 1;
-  }
   .perfHeaderRightControls select, 
   .perfHeaderRightControls button:not(.expandBtnInline),
   .perfHeaderRightControls [class*="dropdown"] {
-  
-    font-size: 11px !important;   /* Text size chhota kiya */
-    padding: 6px 8px !important;  /* Padding adjust ki */
-  }
-
-  /* Dropdown ke icon/text alignment */
-  .perfHeaderRightControls {
-    gap: 120px; 
+    font-size: 11px !important;   
+    padding: 6px 8px !important;  
   }
 }

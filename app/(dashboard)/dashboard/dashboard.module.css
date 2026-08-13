@@ -1,8 +1,10 @@
 .container {
   padding: 24px;
   width: 100%;
+  max-width: 100vw;
   min-height: 100vh;
   box-sizing: border-box;
+  overflow-x: hidden;
   --dash-line: rgba(148, 163, 184, 0.14);
   --dash-surface: rgba(14, 25, 43, 0.72);
   --dash-muted: #94a3b8;
@@ -187,15 +189,52 @@
 @media (max-width: 768px) {
   .container {
     padding: 14px;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
-  .dashboardGrid {
-    display: grid;
-    grid-template-columns: 1fr !important;
-    gap: 14px;
+  .dashboardGrid, .dashboardGridBottom {
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-template-columns: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden;
   }
 
+  /* Saare cards ke liye strict width constraint */
   .cardDark, .cardLight {
     width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+  .topHeaderBar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .topRightGroup {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .balanceSectionGroup {
+    flex: 1;
+  }
+
+  .balancePillDark,
+  .balancePillLight {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .topActionButtons {
+    display: flex;
+    gap: 10px;
   }
 }

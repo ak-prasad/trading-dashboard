@@ -370,3 +370,28 @@
 .cardLight {
   background: rgba(255, 255, 255, 0.82);
 }
+
+@media (max-width: 768px) {
+  .cardDark, .cardLight {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 16px !important; /* Mobile par padding thodi compact ki */
+  }
+
+  .chartNormal {
+    width: min(100%, 220px) !important; /* Mobile par chart ka size balance karne ke liye */
+  }
+
+  .centerNumber {
+    font-size: clamp(24px, 6vw, 36px) !important;
+  }
+
+  .centerLabel {
+    font-size: clamp(13px, 4vw, 18px) !important;
+  }
+
+  .inlineBrokerList {
+    gap: 6px 10px !important;
+  }
+}
