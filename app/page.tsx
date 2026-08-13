@@ -30,7 +30,6 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     
-    // Yahan aap apna Credentials Auth connect kar sakte hain
     setTimeout(() => {
       setLoading(false);
       alert("For real-time Google Sheets sync, please use the 'Google' button below!");

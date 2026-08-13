@@ -17,12 +17,10 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export const useTheme = () => useContext(ThemeContext);
 
-// Session monitor jo background me token expiration check karega
 function SessionMonitor() {
   const { data: session } = useSession();
 
   useEffect(() => {
-    // Agar refresh token error aati hai toh turant re-login trigger karein
     if ((session as any)?.error === "RefreshAccessTokenError") {
       window.location.href = "/api/auth/signin";
     }
@@ -32,8 +30,23 @@ function SessionMonitor() {
 }
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState("dark"); // "light" | "dark" | "system"
-  const [resolvedTheme, setResolvedTheme] = useState("dark");
+  // Page load hote hi localStorage se saved theme uthayenge, agar nahi hai toh default "dark"
+  const [theme, setThemeState] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") || "dark";
+    }
+    return "dark";
+  });
+  
+  const [resolvedTheme, setResolvedTheme] = useState<string>(theme);
+
+  // Theme change hone par localStorage me save karne ke liye custom setter
+  const setTheme = (newTheme: string) => {
+    setThemeState(newTheme);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("theme", newTheme);
+    }
+  };
 
   useEffect(() => {
     const updateTheme = () => {
