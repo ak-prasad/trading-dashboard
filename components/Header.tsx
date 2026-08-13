@@ -46,7 +46,7 @@ export default function Header({ isDark, mobileMenuOpen, setMobileMenuOpen }: He
             <LineChart className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="font-extrabold text-sm tracking-wide leading-tight">TRADING</h1>
+            <h1 className="font-extrabold text-sm tracking-wide leading-tight">MY TRADING</h1>
             <p className="text-[10px] text-emerald-400 font-bold tracking-widest leading-tight">DASHBOARD</p>
           </div>
         </div>
