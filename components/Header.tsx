@@ -43,19 +43,18 @@ export default function Header({ isDark, mobileMenuOpen, setMobileMenuOpen }: He
         </button>
         
        <div className="flex items-center gap-3">
-  {/* Direct HTML img tag for instant load */}
-  <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-emerald-500/20 bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center p-0.5">
-    <img 
-      src="/logo.png" 
-      alt="Logo" 
-      className="w-full h-full object-cover rounded-lg"
-    />
-  </div>
-  <div>
-    <h1 className="font-extrabold text-sm tracking-wide leading-tight">MY TRADING</h1>
-    <p className="text-[10px] text-emerald-400 font-bold tracking-widest leading-tight">DASHBOARD</p>
-  </div>
-</div>
+          <div className="w-10 h-10 flex items-center justify-center">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <div>
+            <h1 className="font-extrabold text-sm tracking-wide leading-tight">MY TRADING</h1>
+            <p className="text-[10px] text-emerald-400 font-bold tracking-widest leading-tight">DASHBOARD</p>
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

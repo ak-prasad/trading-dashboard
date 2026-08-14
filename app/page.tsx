@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { LineChart, Mail, Lock, Eye, EyeOff, ShieldCheck, PieChart, TrendingUp, LogIn } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ShieldCheck, PieChart, TrendingUp } from "lucide-react";
 import { useTheme } from "@/components/Providers";
 import styles from "./page.module.css";
 
@@ -50,8 +50,9 @@ export default function LoginPage() {
       {/* Left Side Hero Panel */}
       <div className={styles.leftHeroPanel}>
         <div className="flex items-center gap-3 mb-12">
-          <div className="bg-gradient-to-tr from-emerald-500 to-cyan-500 p-2.5 rounded-xl text-white shadow-lg shadow-emerald-500/20">
-            <LineChart className="w-5 h-5" />
+          {/* Transparent Logo */}
+          <div className="w-10 h-10 flex items-center justify-center">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <h1 className="font-bold text-sm tracking-wide">TRADING</h1>
@@ -106,8 +107,9 @@ export default function LoginPage() {
         <div className={styles.loginCard}>
           
           <div className="text-center mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center mx-auto mb-3 text-white shadow-lg shadow-emerald-500/20">
-              <LineChart className="w-6 h-6" />
+            {/* Transparent Logo in Login Card */}
+            <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <h3 className="text-lg font-bold">Welcome Back!</h3>
             <p className="text-xs text-gray-400 mt-1">Login to access your trading dashboard</p>
