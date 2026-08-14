@@ -43,7 +43,7 @@ export default function Header({ isDark, mobileMenuOpen, setMobileMenuOpen }: He
         </button>
         
        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 flex items-center justify-center">
+          <div className="w-12 h-12 flex items-center justify-center">
             <img 
               src="/logo.png" 
               alt="Logo" 
@@ -51,8 +51,8 @@ export default function Header({ isDark, mobileMenuOpen, setMobileMenuOpen }: He
             />
           </div>
           <div>
-            <h1 className="font-extrabold text-sm tracking-wide leading-tight">MY TRADING</h1>
-            <p className="text-[10px] text-emerald-400 font-bold tracking-widest leading-tight">DASHBOARD</p>
+           <h1 className="font-extrabold text-base md:text-lg tracking-wide leading-tight">MY TRADING</h1>
+           <p className="text-[10px] text-emerald-400 font-bold tracking-widest leading-tight">DASHBOARD</p>
           </div>
         </div>
       </div>
