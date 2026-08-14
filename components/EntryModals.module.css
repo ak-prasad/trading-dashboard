@@ -82,3 +82,134 @@
     grid-column: span 2;
   }
 }
+
+/* Custom broker dropdown — same visual system as the textboxes */
+.customDropdown { position: relative; width: 100%; }
+.dropdownTrigger {
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}
+.dropdownPlaceholder { color: #64748b; }
+.dropdownChevron { color: #94a3b8; flex-shrink: 0; transition: transform .18s ease; }
+.dropdownChevronOpen { transform: rotate(180deg); }
+.dropdownMenuDark, .dropdownMenuLight { position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 60; padding: 6px; border-radius: 14px; max-height: 220px; overflow-y: auto; box-shadow: 0 18px 35px rgba(0,0,0,.28); }
+.dropdownMenuDark { background: #101827; border: 1px solid #263548; }
+.dropdownMenuLight { background: #ffffff; border: 1px solid #d9e1ea; }
+.dropdownOption { width: 100%; border: 0; background: transparent; padding: 10px 12px; border-radius: 10px; text-align: left; font-size: 13px; cursor: pointer; }
+.dropdownMenuDark .dropdownOption { color: #e5e7eb; }
+.dropdownMenuLight .dropdownOption { color: #0f172a; }
+.dropdownOption:hover { background: rgba(16,185,129,.12); color: #34d399; }
+
+/* Custom Trade Saved dialog */
+.successOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(7px);
+}
+
+.successDialogDark,
+.successDialogLight {
+  width: min(100%, 390px);
+  border-radius: 22px;
+  padding: 30px;
+  text-align: center;
+  border: 1px solid;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+}
+
+.successDialogDark {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.16), transparent 16rem),
+    #09111f;
+  border-color: #1f3a3b;
+  color: #fff;
+}
+
+.successDialogLight {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12), transparent 16rem),
+    #f6f8fc;
+  border-color: #d8e1eb;
+  color: #0f172a;
+}
+
+.successIcon {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.32);
+}
+
+.successDialogDark h3,
+.successDialogLight h3 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.successDialogDark p,
+.successDialogLight p {
+  margin: 8px 0 24px;
+  font-size: 14px;
+}
+
+.successDialogDark p {
+  color: #94a3b8;
+}
+
+.successDialogLight p {
+  color: #64748b;
+}
+
+.successActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.addMoreButton,
+.closeSuccessButton {
+  min-height: 43px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.addMoreButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #fff;
+  border: 1px solid rgba(16, 185, 129, 0.55);
+  background: linear-gradient(90deg, #059669, #10b981);
+}
+
+.closeSuccessButton {
+  border: 1px solid #334155;
+  color: inherit;
+  background: transparent;
+}
+
+.successDialogLight .closeSuccessButton {
+  border-color: #cbd5e1;
+}

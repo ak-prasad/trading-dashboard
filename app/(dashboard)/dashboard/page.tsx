@@ -176,58 +176,131 @@ export default function DashboardPage() {
     }
   }
 
-  const rawMax = Math.max(...chartPoints.map(d => d.value), 0);
-  const rawMin = Math.min(...chartPoints.map(d => d.value), 0);
+  // --- SMART Y-AXIS LIMIT CALCULATION ---
+  const values = chartPoints.map(d => d.value);
+  const rawMax = Math.max(...values, 0);
+  const rawMin = Math.min(...values, 0);
 
-  let maxVal = 10;
-  if (rawMax > 0) {
-    const magnitude = Math.pow(10, Math.floor(Math.log10(rawMax)));
-    const normalized = rawMax / magnitude;
-    let roundedNormalized = 10;
-    if (normalized <= 1) roundedNormalized = 1;
-    else if (normalized <= 2) roundedNormalized = 2;
-    else if (normalized <= 5) roundedNormalized = 5;
-    else roundedNormalized = 10;
-    maxVal = roundedNormalized * magnitude;
-  } else {
-    maxVal = 10;
-  }
+  // < 1000: round UP to nearest 100
+  // >= 1000: round UP to nearest 1000
+  const getRoundedLimit = (value: number) => {
+    if (value <= 0) return 0;
 
-  let minVal = 0;
-  if (pnlMode === 'daily' && rawMin < 0) {
-    const absMin = Math.abs(rawMin);
-    const magnitude = Math.pow(10, Math.floor(Math.log10(absMin)));
-    const normalized = absMin / magnitude;
-    let roundedNormalized = 10;
-    if (normalized <= 1) roundedNormalized = 1;
-    else if (normalized <= 2) roundedNormalized = 2;
-    else if (normalized <= 5) roundedNormalized = 5;
-    else roundedNormalized = 10;
-    minVal = -(roundedNormalized * magnitude);
-  } else {
+    if (value < 1000) {
+      return Math.ceil(value / 100) * 100;
+    }
+
+    return Math.ceil(value / 1000) * 1000;
+  };
+
+  const hasPositive = rawMax > 0;
+  const hasNegative = rawMin < 0;
+
+  let maxVal = hasPositive ? getRoundedLimit(rawMax) : 0;
+  let minVal = hasNegative ? -getRoundedLimit(Math.abs(rawMin)) : 0;
+
+  // Fallback when all values are zero
+  if (!hasPositive && !hasNegative) {
+    maxVal = 100;
     minVal = 0;
   }
 
-  const range = maxVal - minVal || 1;
-  
   const svgHeight = isChartExpanded ? 430 : 200;
   const svgWidth = 600;
 
+  // ===== EXACT Y-AXIS POSITIONING =====
+  const plotTop = 20;
+  const plotBottom = svgHeight - 20;
+  const plotHeight = plotBottom - plotTop;
+
+  // 0 must always be exactly in the middle when both signs exist.
+  const zeroY = plotTop + plotHeight / 2;
+
+  const getYPosition = (rawValue: number) => {
+    const value = Number(rawValue) || 0;
+
+    // POSITIVE + NEGATIVE
+    if (hasPositive && hasNegative) {
+      if (value > 0) {
+        // Positive values can NEVER go below zeroY.
+        const positiveValue = Math.min(value, maxVal);
+        return Math.max(
+          plotTop,
+          zeroY - (positiveValue / maxVal) * (plotHeight / 2)
+        );
+      }
+
+      if (value < 0) {
+        // Negative values can NEVER go above zeroY.
+        const negativeValue = Math.min(Math.abs(value), Math.abs(minVal));
+        return Math.min(
+          plotBottom,
+          zeroY + (negativeValue / Math.abs(minVal)) * (plotHeight / 2)
+        );
+      }
+
+      return zeroY;
+    }
+
+    // ONLY POSITIVE
+    if (hasPositive) {
+      const positiveValue = Math.max(0, Math.min(value, maxVal));
+      return plotBottom - (positiveValue / maxVal) * plotHeight;
+    }
+
+    // ONLY NEGATIVE
+    if (hasNegative) {
+      const negativeValue = Math.min(
+        Math.abs(Math.min(value, 0)),
+        Math.abs(minVal)
+      );
+      return plotTop + (negativeValue / Math.abs(minVal)) * plotHeight;
+    }
+
+    return plotBottom;
+  };
+
   const svgPoints = chartPoints.map((d, index) => {
-    const x = (index / (chartPoints.length - 1 || 1)) * (svgWidth - 40) + 20;
-    const y = svgHeight - ((d.value - minVal) / range) * (svgHeight - 40) - 20;
-    return { x, y, ...d };
+    const x =
+      (index / (chartPoints.length - 1 || 1)) * (svgWidth - 40) + 20;
+
+    const numericValue = Number(d.value) || 0;
+    const y = getYPosition(numericValue);
+
+    return {
+      x,
+      y,
+      label: d.label,
+      value: numericValue,
+    };
   });
 
-  const pathString = svgPoints.reduce((acc, pt, idx) => idx === 0 ? `M ${pt.x},${pt.y}` : `${acc} L ${pt.x},${pt.y}`, '');
-  const areaString = `${pathString} L ${svgWidth},${svgHeight} L 0,${svgHeight} Z`;
+  const pathString = svgPoints.reduce(
+    (acc, pt, idx) => idx === 0 ? `M ${pt.x},${pt.y}` : `${acc} L ${pt.x},${pt.y}`,
+    ''
+  );
+
+  // Area always closes to the zero baseline.
+  const areaBaselineY =
+    hasPositive && hasNegative
+      ? zeroY
+      : hasPositive
+        ? plotBottom
+        : plotTop;
+
+  const firstPoint = svgPoints[0];
+  const lastPoint = svgPoints[svgPoints.length - 1];
+
+  const areaString =
+    svgPoints.length > 0
+      ? `${pathString} L ${lastPoint.x},${areaBaselineY} L ${firstPoint.x},${areaBaselineY} Z`
+      : '';
 
   const [bottomMetric, setBottomMetric] = useState<"profit" | "loss">("profit");
 
   return (
     <div className={`${styles.container} ${isDark ? styles.darkTheme : styles.lightTheme}`} ref={menuRef}>
 
-    {/* Top Header Section: Left me Heading, Right me Balance aur Action Buttons */}
       <div className={styles.topHeaderBar}>
         <div className={styles.mainHeadingSection}>
           <h1 className={styles.pageTitle}>Dashboard</h1>
@@ -296,7 +369,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Grid: Left and Right Cards */}
       <div className={styles.dashboardGrid}>
         <TotalAssetsCard 
           isDark={isDark}
@@ -334,7 +406,6 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Grid: Bottom Metrics & Promo Card */}
       <div className={styles.dashboardGridBottom}>
         <BottomMetricsCard 
           isDark={isDark}

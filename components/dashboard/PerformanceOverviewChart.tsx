@@ -53,6 +53,52 @@ export default function PerformanceOverviewChart({
   hoveredPoint,
   setHoveredPoint,
 }: PerformanceOverviewChartProps) {
+  
+  const formatVal = (v: number) => {
+    const absV = Math.abs(v);
+    const prefix = v < 0 ? "-" : "";
+
+    if (absV >= 1000) {
+      const inK = absV / 1000;
+      return `${prefix}${currencySymbol}${inK.toFixed(Number.isInteger(inK) ? 0 : 1).replace(/\.0$/, "")}K`;
+    }
+
+    return `${prefix}${currencySymbol}${absV.toFixed(0)}`;
+  };
+
+  const hasPositive = maxVal > 0;
+  const hasNegative = minVal < 0;
+
+  let yAxisValues: number[] = [];
+
+  if (hasPositive && hasNegative) {
+    yAxisValues = [
+      maxVal,
+      maxVal * 0.5,
+      0,
+      minVal * 0.5,
+      minVal,
+    ];
+  } else if (hasPositive) {
+    yAxisValues = [
+      maxVal,
+      maxVal * 0.75,
+      maxVal * 0.5,
+      maxVal * 0.25,
+      0,
+    ];
+  } else if (hasNegative) {
+    yAxisValues = [
+      0,
+      minVal * 0.25,
+      minVal * 0.5,
+      minVal * 0.75,
+      minVal,
+    ];
+  } else {
+    yAxisValues = [100, 75, 50, 25, 0];
+  }
+
   return (
     <div className={`${styles.rightColumn} ${isChartExpanded ? styles.expandedChartCard : ""}`}>
       <div className={isDark ? styles.cardDark : styles.cardLight} style={{ height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
@@ -118,49 +164,52 @@ export default function PerformanceOverviewChart({
         </div>
 
        <div className={styles.perfChartContainer}>
-          {/* Y-Axis Labels: Separate rendering for Positive-only vs Mixed Data */}
-          <div className={styles.yAxisLabels} style={{ height: isChartExpanded ? '430px' : '200px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxSizing: 'border-box', padding: '20px 0' }}>
-            
-            {/* Line 1: Max */}
-            <span style={{ display: 'flex', alignItems: 'center', height: '1px', justifyContent: 'flex-end', overflow: 'visible' }}>
-              {currencySymbol}{maxVal >= 1000 ? (maxVal / 1000).toFixed(0) + 'K' : maxVal.toFixed(0)}
-            </span>
-
-            {/* Line 2: 75% or Mid-High */}
-            <span style={{ display: 'flex', alignItems: 'center', height: '1px', justifyContent: 'flex-end', overflow: 'visible' }}>
-              {minVal < 0 ? `${currencySymbol}${((maxVal * 0.5) >= 1000 ? ((maxVal * 0.5) / 1000).toFixed(0) + 'K' : (maxVal * 0.5).toFixed(0))}` : `${currencySymbol}${((maxVal * 0.75) >= 1000 ? ((maxVal * 0.75) / 1000).toFixed(0) + 'K' : (maxVal * 0.75).toFixed(0))}`}
-            </span>
-
-            {/* Line 3: Center (0 if mixed, or 50% if positive-only) */}
-            <span style={{ display: 'flex', alignItems: 'center', height: '1px', justifyContent: 'flex-end', overflow: 'visible' }}>
-              {minVal < 0 ? `${currencySymbol}0` : `${currencySymbol}${((maxVal * 0.5) >= 1000 ? ((maxVal * 0.5) / 1000).toFixed(0) + 'K' : (maxVal * 0.5).toFixed(0))}`}
-            </span>
-
-            {/* Line 4: 25% or Mid-Low Negative */}
-            <span style={{ display: 'flex', alignItems: 'center', height: '1px', justifyContent: 'flex-end', overflow: 'visible' }}>
-              {minVal < 0 ? `-${currencySymbol}${((Math.abs(minVal) * 0.5) >= 1000 ? ((Math.abs(minVal) * 0.5) / 1000).toFixed(0) + 'K' : (Math.abs(minVal) * 0.5).toFixed(0))}` : `${currencySymbol}${((maxVal * 0.25) >= 1000 ? ((maxVal * 0.25) / 1000).toFixed(0) + 'K' : (maxVal * 0.25).toFixed(0))}`}
-            </span>
-
-            {/* Line 5: Bottom (0 for positive-only, -Max for mixed loss) */}
-            <span style={{ display: 'flex', alignItems: 'center', height: '1px', justifyContent: 'flex-end', overflow: 'visible' }}>
-              {minVal < 0 ? `-${currencySymbol}${Math.abs(minVal) >= 1000 ? (Math.abs(minVal) / 1000).toFixed(0) + 'K' : Math.abs(minVal).toFixed(0)}` : `${currencySymbol}0`}
-            </span>
-
+          {/* Dynamic Y-Axis Labels */}
+          <div
+            className={styles.yAxisLabels}
+            style={{
+              height: isChartExpanded ? "430px" : "200px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              boxSizing: "border-box",
+              padding: "20px 0",
+            }}
+          >
+            {yAxisValues.map((value, index) => (
+              <span
+                key={index}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  height: "1px",
+                  justifyContent: "flex-end",
+                  overflow: "visible",
+                }}
+              >
+                {formatVal(value)}
+              </span>
+            ))}
           </div>
          
           <div className={styles.chartWithXAxisWrapper}>
             <div className={styles.perfLineVisual} style={{ height: isChartExpanded ? '430px' : '200px', position: 'relative' }}>
               
-              {/* Exactly 5 Background Grid Lines */}
               <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', pointerEvents: 'none', boxSizing: 'border-box', padding: '20px 0' }}>
-                <div style={{ width: '100%', borderTop: '1px dashed rgba(255, 255, 255, 0.08)' }} />
-                <div style={{ width: '100%', borderTop: '1px dashed rgba(255, 255, 255, 0.08)' }} />
-                <div style={{ width: '100%', borderTop: '1px dashed rgba(255, 255, 255, 0.08)' }} />
-                <div style={{ width: '100%', borderTop: '1px dashed rgba(255, 255, 255, 0.08)' }} />
-                <div style={{ width: '100%', borderTop: '1px dashed rgba(255, 255, 255, 0.08)' }} />
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      width: '100%',
+                      borderTop: index === 2
+                        ? '1px solid rgba(255, 255, 255, 0.18)'
+                        : '1px dashed rgba(255, 255, 255, 0.08)'
+                    }}
+                  />
+                ))}
               </div>
 
-              <svg className={styles.svgChart} viewBox={`0 0 ${svgWidth} ${svgHeight}`} preserveAspectRatio="none" style={{ position: 'relative', zIndex: 2 }}>
+              <svg className={styles.svgChart} viewBox={`0 0 ${svgWidth} ${svgHeight}`} preserveAspectRatio="none" style={{ position: 'relative', zIndex: 2, overflow: 'visible' }}>
                 <defs>
                   <linearGradient id="pnlGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#10b981" stopOpacity="0.35" />
@@ -183,7 +232,7 @@ export default function PerformanceOverviewChart({
                     <div
                       key={idx}
                       className={styles.absoluteDotWrapper}
-                      style={{ left: `${leftPercent}%`, top: `${topPercent}%` }}
+                      style={{ left: `${leftPercent}%`, top: `${topPercent}%`, position: 'absolute', transform: 'translate(-50%, -50%)' }}
                       onMouseEnter={() => setHoveredPoint(pt)}
                       onMouseLeave={() => setHoveredPoint(null)}
                     >
@@ -202,7 +251,8 @@ export default function PerformanceOverviewChart({
                           backgroundColor: isProfit ? "#10b981" : "#ef4444",
                           width: isHovered ? "12px" : "9px",
                           height: isHovered ? "12px" : "9px",
-                          boxShadow: isProfit ? "0 0 8px #10b981" : "0 0 8px #ef4444"
+                          boxShadow: isProfit ? "0 0 8px #10b981" : "0 0 8px #ef4444",
+                          borderRadius: "50%"
                         }}
                       />
                     </div>
@@ -216,7 +266,7 @@ export default function PerformanceOverviewChart({
               {svgPoints.map((pt: any, idx: number) => {
                 const leftPercent = (pt.x / svgWidth) * 100;
                 return (
-                  <span key={idx} style={{ left: `${leftPercent}%` }} className={styles.xAxisLabelItem}>
+                  <span key={idx} style={{ left: `${leftPercent}%`, position: 'absolute', transform: 'translateX(-50%)' }} className={styles.xAxisLabelItem}>
                     {pt.label}
                   </span>
                 );

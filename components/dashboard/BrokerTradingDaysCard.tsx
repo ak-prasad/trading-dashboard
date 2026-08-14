@@ -16,30 +16,64 @@ export default function BrokerTradingDaysCard({
 }: BrokerDaysProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const predefinedBrokers = ["Algo", "Angel One", "Dhan", "Groww", "SAHI", "Lemonn", "Upstox", "DeltaExchange", "XM", "CoinDCX", "Binance"];
+  // Added Bigul Algo explicitly to prevent any color mapping miss
+  const predefinedBrokers = [" Bigul Algo", "Angel One", "Dhan", "Groww", "SAHI", "Lemonn", "Upstox", "DeltaExchange", "XM", "CoinDCX", "Binance"];
   
   const allUniqueDates = new Set<string>();
   const brokerDaysMap: Record<string, Set<string>> = {};
 
-  allData.forEach((row) => {
-    const date = String(row[0] || "").trim();
-    const broker = String(row[1] || "Unknown").trim();
+  if (Array.isArray(allData)) {
+    allData.forEach((row) => {
+      if (!Array.isArray(row)) return;
 
-    if (!date || !broker) return;
+      const rowString = row.join(" ").toLowerCase();
+      // Ignore deposit and withdrawal rows
+      if (rowString.includes("deposit") || rowString.includes("withdrawal")) {
+        return;
+      }
 
-    allUniqueDates.add(date);
-    if (!brokerDaysMap[broker]) brokerDaysMap[broker] = new Set();
-    brokerDaysMap[broker].add(date);
-  });
+      let date = "";
+      let broker = "";
+
+      // Scan all cells in the row dynamically
+      row.forEach((cell) => {
+        const val = String(cell || "").trim();
+        const lowerVal = val.toLowerCase();
+
+        // Check if cell is a known broker
+        const matched = predefinedBrokers.find(b => b.toLowerCase() === lowerVal);
+        if (matched) {
+          broker = matched;
+        }
+
+        // Detect Date
+        if (!date && (val.includes("-") || val.includes("/")) && val.length >= 8) {
+          date = val;
+        }
+      });
+
+      // Strict index fallback if dynamic scanning fails
+      if (!date && row[0]) date = String(row[0]).trim();
+      if (!broker && row[1]) broker = String(row[1]).trim();
+
+      if (!date || !broker) return;
+
+      allUniqueDates.add(date);
+      if (!brokerDaysMap[broker]) brokerDaysMap[broker] = new Set();
+      brokerDaysMap[broker].add(date);
+    });
+  }
 
   const overallTradingDays = allUniqueDates.size;
+  const activeBrokers = Object.keys(brokerDaysMap);
 
-  // Sirf active brokers (days > 0) ko filter karein aur global BROKER_COLOR_MAP se exact synchronized color assign karein
-  const rawBrokerData = predefinedBrokers.map((broker, idx) => {
+  const rawBrokerData = activeBrokers.map((broker, idx) => {
     const daysSet = brokerDaysMap[broker];
     const days = daysSet ? daysSet.size : 0;
     
-    const color = BROKER_COLOR_MAP[broker] || colorsList[idx % colorsList.length] || globalColorsList[idx % globalColorsList.length];
+    const cList = colorsList || [];
+    const gList = globalColorsList || [];
+    const color = BROKER_COLOR_MAP[broker] || cList[idx % (cList.length || 1)] || gList[idx % (gList.length || 1)] || "#10b981";
 
     return {
       broker,
@@ -49,8 +83,6 @@ export default function BrokerTradingDaysCard({
   }).filter((item) => item.days > 0);
 
   const totalActualDays = rawBrokerData.reduce((sum, item) => sum + item.days, 0);
-
-  // Descending order me sort karein
   const brokerData = [...rawBrokerData].sort((a, b) => b.days - a.days);
 
   let cumulativeAngle = 0;
@@ -72,10 +104,15 @@ export default function BrokerTradingDaysCard({
     const labelRadius = 0.82;
     const largeArcFlag = share > 0.5 ? 1 : 0;
 
+    // FIX: Perfect center-aligned circle for 100% single broker using two safe half-arcs
+    const pathData = brokerData.length === 1 
+      ? `M 0 -1 A 1 1 0 1 1 0 1 A 1 1 0 1 1 0 -1 Z` 
+      : `M ${startX} ${startY} A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY} L 0 0 Z`;
+
     return {
       ...item,
       percentVal,
-      pathData: `M ${startX} ${startY} A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY} L 0 0`,
+      pathData,
       labelX: Math.cos(middleAngle) * labelRadius,
       labelY: Math.sin(middleAngle) * labelRadius,
     };
@@ -129,7 +166,7 @@ export default function BrokerTradingDaysCard({
             )}
 
             {slices.map((slice, i) =>
-              slice.days > 0 ? (
+              slice.days > 0 && brokerData.length > 1 ? (
                 <text
                   key={`slice-text-${i}-${slice.broker}`}
                   x={slice.labelX}
@@ -141,6 +178,7 @@ export default function BrokerTradingDaysCard({
               ) : null
             )}
 
+            {/* This renders the black center hole over the wedges */}
             <circle className={styles.donutHole} cx="0" cy="0" r="0.63" />
           </svg>
 

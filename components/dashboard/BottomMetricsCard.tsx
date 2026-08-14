@@ -1,411 +1,355 @@
-"use client";
+import { useState } from "react";
+import { TrendingUp, TrendingDown, ArrowUpRight } from "lucide-react";
+import CTADropDown from "@/style/CTADropDown";
+import styles from "./BottomMetricsCard.module.css";
 
-import React, { useState, useEffect, useRef } from "react";
-import { X, PlusCircle, ArrowDownRight, ArrowUpRight, RotateCcw, ChevronDown, Calendar } from "lucide-react";
-import styles from "./EntryModals.module.css";
-
-interface EntryModalsProps {
-  activeModal: "addTrade" | "deposit" | "withdrawal" | null;
-  onClose: () => void;
+interface BottomMetricsCardProps {
   isDark: boolean;
-  onSaveTrade?: (data: any) => void;
-  onSaveDeposit?: (data: any) => void;
-  onSaveWithdrawal?: (data: any) => void;
+  currencySymbol: string;
+  bottomMetric: "profit" | "loss";
+  setBottomMetric: (metric: "profit" | "loss") => void;
+  allData: any[];
+  dynamicYears: string[];
+  monthsList: { value: string; label: string }[];
 }
 
-export default function EntryModals({
-  activeModal,
-  onClose,
+export default function BottomMetricsCard({
   isDark,
-  onSaveTrade,
-  onSaveDeposit,
-  onSaveWithdrawal
-}: EntryModalsProps) {
-  const [currentMarket, setCurrentMarket] = useState("share");
+  currencySymbol,
+  bottomMetric,
+  setBottomMetric,
+  allData,
+  dynamicYears,
+  monthsList,
+}: BottomMetricsCardProps) {
+  const safeData = Array.isArray(allData) ? allData : [];
+  
+  
+  const extractedYears = Array.from(new Set(safeData.map(row => {
+    const dateStr = String(row[0] || "");
+    const parts = dateStr.split(/[-/]/);
+    return parts[0].length === 4 ? parts[0] : (parts[2]?.length === 4 ? parts[2] : null);
+  }))).filter(Boolean) as string[];
 
-  // Custom Dropdown states
-  const [isBrokerOpen, setIsBrokerOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const now = new Date();
+  const currentYearStr = String(new Date().getFullYear());
+  
+  const finalDynamicYears = Array.from(new Set([...extractedYears, currentYearStr]))
+    .sort((a, b) => Number(b) - Number(a));
 
-  // Fetch current selected market and listen to changes
-  useEffect(() => {
-    const market = localStorage.getItem("selectedMarket") || "share";
-    setCurrentMarket(market);
+  const defaultYear = finalDynamicYears[0] || currentYearStr;
+  const defaultMonth = String(now.getMonth() + 1).padStart(2, '0');
 
-    const handleMarketChange = () => {
-      const updatedMarket = localStorage.getItem("selectedMarket") || "share";
-      setCurrentMarket(updatedMarket);
-    };
+  const getMonthWeeksMap = (yearStr: string, monthStr: string) => {
+    const year = parseInt(yearStr, 10);
+    const month = parseInt(monthStr, 10);
+    
+    const firstDayOfMonth = new Date(year, month - 1, 1);
+    const lastDayOfMonth = new Date(year, month, 0);
 
-    window.addEventListener("marketChange", handleMarketChange);
-    return () => window.removeEventListener("marketChange", handleMarketChange);
-  }, []);
+    const jsFirstDay = firstDayOfMonth.getDay();
+    const mondayBasedStartDay = (jsFirstDay + 6) % 7;
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsBrokerOpen(false);
+    const weeks: { weekLabel: string; days: { dayNum: number; monthOffset: number; label: string }[] }[] = [];
+    let currentDate = new Date(year, month - 1, 1 - mondayBasedStartDay);
+    let weekCounter = 1;
+
+    while (currentDate <= lastDayOfMonth || currentDate.getDay() !== 1) {
+      const currentWeekDays: { dayNum: number; monthOffset: number; label: string }[] = [];
+      
+      for (let i = 0; i < 7; i++) {
+        const dNum = currentDate.getDate();
+        const mOffset = currentDate.getMonth() - (month - 1);
+        const mObj = monthsList.find(m => m.value === String(currentDate.getMonth() + 1).padStart(2, '0'));
+        const mShort = mObj ? mObj.label.slice(0, 3) : "";
+        
+        currentWeekDays.push({
+          dayNum: dNum,
+          monthOffset: mOffset,
+          label: `${String(dNum).padStart(2, '0')} ${mShort}`
+        });
+
+        currentDate.setDate(currentDate.getDate() + 1);
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
-  // Dynamic brokers list based on market type
-  const brokers = currentMarket === "crypto" 
-    ? ["DeltaExchange", "XM", "CoinDCX", "Binance"] 
-    : ["Bigul Algo", "Angel One", "Dhan", "Groww", "SAHI", "Lemonn", "Upstox"];
+      weeks.push({
+        weekLabel: `Week ${weekCounter}`,
+        days: currentWeekDays
+      });
 
-  // Dynamic currency symbol
-  const currencySymbol = currentMarket === "crypto" ? "$" : "₹";
+      weekCounter++;
 
-  const initialTradeState = {
-    date: new Date().toISOString().split("T")[0],
-    broker: "",
-    tradeName: "",
-    qty: "",
-    buyPrice: "",
-    sellPrice: "",
-    brokerage: "",
-    market: currentMarket
+      if (currentDate > lastDayOfMonth && currentDate.getDay() === 1) {
+        break;
+      }
+    }
+
+    return weeks;
   };
-  const [tradeData, setTradeData] = useState(initialTradeState);
 
-  const initialDepositState = {
-    date: new Date().toISOString().split("T")[0],
-    broker: "",
-    amount: "",
-    market: currentMarket
+  const computeDefaultWeek = (yr: string, mth: string) => {
+    const weeks = getMonthWeeksMap(yr, mth);
+    const currentDayNum = now.getDate();
+    const matched = weeks.find(w => w.days.some(d => d.dayNum === currentDayNum && d.monthOffset === 0));
+    return matched ? matched.weekLabel : (weeks[0]?.weekLabel || "Week 1");
   };
-  const [depositData, setDepositData] = useState(initialDepositState);
 
-  const initialWithdrawalState = {
-    date: new Date().toISOString().split("T")[0],
-    broker: "",
-    amount: "",
-    market: currentMarket
-  };
-  const [withdrawalData, setWithdrawalData] = useState(initialWithdrawalState);
+  const [filterMode, setFilterMode] = useState<"D" | "W" | "M" | "Y">("D");
+  
+  const [selectedYear, setSelectedYear] = useState<string>(defaultYear);
+  const [selectedMonth, setSelectedMonth] = useState<string>(defaultMonth);
+  const [selectedWeek, setSelectedWeek] = useState<string>(computeDefaultWeek(defaultYear, defaultMonth));
 
-  // Reset or attach market type whenever market changes or modal opens
-  useEffect(() => {
-    setTradeData(prev => ({ ...prev, market: currentMarket, broker: "" }));
-    setDepositData(prev => ({ ...prev, market: currentMarket, broker: "" }));
-    setWithdrawalData(prev => ({ ...prev, market: currentMarket, broker: "" }));
-    setIsBrokerOpen(false);
-  }, [currentMarket, activeModal]);
+  const [bottomDropdownOpen, setBottomDropdownOpen] = useState(false);
 
-  if (!activeModal) return null;
+  const currentMonthWeeks = getMonthWeeksMap(selectedYear, selectedMonth);
+  const weeksDropdownOptions = currentMonthWeeks.map(w => ({ value: w.weekLabel, label: w.weekLabel }));
+
+  let chartData: { label: string; val: number }[] = [];
+
+  if (filterMode === "D") {
+    const matchedWeek = currentMonthWeeks.find(w => w.weekLabel === selectedWeek) || currentMonthWeeks[0];
+    const weekDays = matchedWeek ? matchedWeek.days : [];
+
+    const dailyMap: { [key: string]: number } = {};
+    weekDays.forEach(d => {
+      dailyMap[d.label] = 0;
+    });
+
+    safeData.forEach(row => {
+      const dateStr = String(row[0] || "").trim();
+      const parts = dateStr.split(/[-/]/);
+      if (parts.length === 3) {
+        const rYear = parts[0].length === 4 ? parts[0] : parts[2];
+        const rMonth = parts[1].padStart(2, '0');
+        const rDay = parseInt(parts[0].length === 4 ? parts[2] : parts[0], 10);
+
+        const foundDayObj = weekDays.find(d => d.dayNum === rDay);
+        if (foundDayObj && rYear === selectedYear && rMonth === selectedMonth) {
+          const profit = parseFloat(row[9]) || 0;
+          const loss = parseFloat(row[10]) || 0;
+          const val = bottomMetric === "profit" ? profit : loss;
+          if (dailyMap[foundDayObj.label] !== undefined) {
+            dailyMap[foundDayObj.label] += val;
+          }
+        }
+      }
+    });
+
+    chartData = Object.entries(dailyMap).map(([label, val]) => ({ label, val }));
+  } 
+  else if (filterMode === "W") {
+    const weekMap: { [key: string]: number } = {};
+    currentMonthWeeks.forEach(w => weekMap[w.weekLabel] = 0);
+
+    safeData.forEach(row => {
+      const dateStr = String(row[0] || "").trim();
+      const parts = dateStr.split(/[-/]/);
+      if (parts.length === 3) {
+        let rYear = parts[0].length === 4 ? parts[0] : parts[2];
+        let rMonth = parts[1].padStart(2, '0');
+        let rDay = parseInt(parts[0].length === 4 ? parts[2] : parts[0], 10);
+
+        if (rYear === selectedYear && rMonth === selectedMonth) {
+          const foundWeek = currentMonthWeeks.find(w => w.days.some(d => d.dayNum === rDay && d.monthOffset === 0));
+          if (foundWeek) {
+            const profit = parseFloat(row[9]) || 0;
+            const loss = parseFloat(row[10]) || 0;
+            const val = bottomMetric === "profit" ? profit : loss;
+            weekMap[foundWeek.weekLabel] += val;
+          }
+        }
+      }
+    });
+
+    chartData = Object.entries(weekMap).map(([label, val]) => ({ label, val }));
+  } 
+  else if (filterMode === "M") {
+    const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthMap: { [key: string]: number } = {};
+    monthsShort.forEach(m => monthMap[m] = 0);
+
+    safeData.forEach(row => {
+      const dateStr = String(row[0] || "").trim();
+      if (dateStr.includes(selectedYear)) {
+        const parts = dateStr.split(/[-/]/);
+        if (parts.length === 3) {
+          const mNum = parseInt(parts[1], 10) - 1;
+          if (mNum >= 0 && mNum < 12) {
+            const profit = parseFloat(row[9]) || 0;
+            const loss = parseFloat(row[10]) || 0;
+            const val = bottomMetric === "profit" ? profit : loss;
+            monthMap[monthsShort[mNum]] += val;
+          }
+        }
+      }
+    });
+
+    chartData = monthsShort.map(label => ({ label, val: monthMap[label] }));
+  } 
+  else if (filterMode === "Y") {
+    const yearMap: { [key: string]: number } = {};
+    finalDynamicYears.forEach(y => yearMap[y] = 0);
+
+    safeData.forEach(row => {
+      const dateStr = String(row[0] || "").trim();
+      const parts = dateStr.split(/[-/]/);
+      let rYear = parts[0].length === 4 ? parts[0] : (parts[2]?.length === 4 ? parts[2] : "");
+      if (rYear && yearMap[rYear] !== undefined) {
+        const profit = parseFloat(row[9]) || 0;
+        const loss = parseFloat(row[10]) || 0;
+        const val = bottomMetric === "profit" ? profit : loss;
+        yearMap[rYear] += val;
+      }
+    });
+
+    chartData = finalDynamicYears.sort().map(label => ({ label, val: yearMap[label] }));
+  }
+
+  const maxBarVal = Math.max(...chartData.map(d => d.val), 100);
+  const totalMetricVal = chartData.reduce((acc, curr) => acc + curr.val, 0);
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div 
-        className={isDark ? styles.modalContentDark : styles.modalContentLight} 
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-gray-800/40 mb-4">
-          <h3 className="font-bold text-sm tracking-wide">
-            {activeModal === "addTrade" && `New Trade Entry (${currentMarket.toUpperCase()})`}
-            {activeModal === "deposit" && `Deposit / Invest Funds (${currentMarket.toUpperCase()})`}
-            {activeModal === "withdrawal" && `Withdraw Funds (${currentMarket.toUpperCase()})`}
-          </h3>
-          <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-white cursor-pointer">
-            <X className="w-5 h-5" />
-          </button>
+    <div className={styles.dashboardGridBottom}>
+      <div className={isDark ? styles.cardDark : styles.cardLight}>
+        
+        <div className={styles.cardHeaderTop}>
+          
+          <div style={{ position: "relative" }}>
+            <button 
+              className={styles.metricSelectDropdownBtn}
+              onClick={() => setBottomDropdownOpen(!bottomDropdownOpen)}
+            >
+              {bottomMetric === "profit" ? <TrendingUp size={16} color="#10b981" /> : <TrendingDown size={16} color="#ef4444" />}
+              <span>{bottomMetric === "profit" ? "Total Profits" : "Total Losses"}</span>
+            </button>
+
+            {bottomDropdownOpen && (
+              <div className={isDark ? styles.dropdownMenuDark : styles.dropdownMenuLight} style={{ position: "absolute", top: "40px", left: "0", zIndex: 40, width: "160px", borderRadius: "10px", overflow: "hidden" }}>
+                <div 
+                  className={isDark ? styles.dropdownItemDark : styles.dropdownItemLight}
+                  style={{ padding: "10px 12px", fontSize: "12px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
+                  onClick={() => { setBottomMetric("profit"); setBottomDropdownOpen(false); }}
+                >
+                  <TrendingUp size={14} color="#10b981" /> Total Profits
+                </div>
+                <div 
+                  className={isDark ? styles.dropdownItemDark : styles.dropdownItemLight}
+                  style={{ padding: "10px 12px", fontSize: "12px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
+                  onClick={() => { setBottomMetric("loss"); setBottomDropdownOpen(false); }}
+                >
+                  <TrendingDown size={14} color="#ef4444" /> Total Losses
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.filterControlsRight}>
+            
+            {filterMode === "D" && (
+              <div style={{ display: "flex", gap: "8px" }}>
+                <CTADropDown 
+                  options={weeksDropdownOptions.length > 0 ? weeksDropdownOptions : [{ value: "Week 1", label: "Week 1" }]}
+                  selectedValue={selectedWeek}
+                  onSelect={setSelectedWeek}
+                  isDark={isDark}
+                  width="100px"
+                />
+                <CTADropDown 
+                  options={monthsList}
+                  selectedValue={selectedMonth}
+                  onSelect={setSelectedMonth}
+                  isDark={isDark}
+                  width="110px"
+                />
+                <CTADropDown 
+                  options={finalDynamicYears.map(y => ({ value: y, label: y }))}
+                  selectedValue={selectedYear}
+                  onSelect={setSelectedYear}
+                  isDark={isDark}
+                  width="90px"
+                />
+              </div>
+            )}
+
+            {filterMode === "W" && (
+              <div style={{ display: "flex", gap: "8px" }}>
+                <CTADropDown 
+                  options={monthsList}
+                  selectedValue={selectedMonth}
+                  onSelect={setSelectedMonth}
+                  isDark={isDark}
+                  width="110px"
+                />
+                <CTADropDown 
+                  options={finalDynamicYears.map(y => ({ value: y, label: y }))}
+                  selectedValue={selectedYear}
+                  onSelect={setSelectedYear}
+                  isDark={isDark}
+                  width="90px"
+                />
+              </div>
+            )}
+
+            {filterMode === "M" && (
+              <CTADropDown 
+                options={finalDynamicYears.map(y => ({ value: y, label: y }))}
+                selectedValue={selectedYear}
+                onSelect={setSelectedYear}
+                isDark={isDark}
+                width="95px"
+              />
+            )}
+
+            <div className={styles.dwmToggleContainer}>
+              {(["D", "W", "M", "Y"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  className={`${styles.dwmBtn} ${filterMode === mode ? styles.dwmBtnActive : ""}`}
+                  onClick={() => setFilterMode(mode)}
+                >
+                  {mode}
+                </button>
+              ))}
+            </div>
+
+          </div>
         </div>
 
-        {/* 1. ADD TRADE FORM */}
-        {activeModal === "addTrade" && (
-          <form 
-            onSubmit={(e) => { 
-              e.preventDefault(); 
-              if (onSaveTrade) onSaveTrade(tradeData); 
-              setTradeData(initialTradeState);
-            }} 
-            className="space-y-3.5 text-xs sm:text-sm"
-          >
-            <div className={styles.formGrid}>
-              
-              {/* Date Field with Custom Calendar Styling */}
-              <div>
-                <label className="text-gray-400 font-medium mb-1 block">Date</label>
-                <div className="relative flex items-center">
-                  <input 
-                    type="date" 
-                    value={tradeData.date}
-                    onChange={(e) => setTradeData({...tradeData, date: e.target.value})}
-                    className={`${isDark ? styles.inputDark : styles.inputLight} cursor-pointer`}
-                    required
-                  />
-                </div>
-              </div>
+        <div className={styles.cardMainValVal}>
+          {currencySymbol}{totalMetricVal.toLocaleString()}
+        </div>
+        <div className={styles.growthBadge} style={{ color: bottomMetric === "profit" ? "#10b981" : "#ef4444", backgroundColor: bottomMetric === "profit" ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)" }}>
+          <ArrowUpRight size={14} /> {bottomMetric === "profit" ? "Net Profit Overview" : "Net Loss Overview"}
+        </div>
 
-              {/* Custom Broker Dropdown */}
-              <div className="relative" ref={dropdownRef}>
-                <label className="text-gray-400 font-medium mb-1 block">Broker</label>
+        <div className={styles.profitBarsContainer}>
+          {chartData.map((item, idx) => {
+            const heightPercent = maxBarVal > 0 ? (item.val / maxBarVal) * 100 : 0;
+            const isProfit = bottomMetric === "profit";
+
+            return (
+              <div className={styles.barItem} key={idx}>
+                <span className={styles.barTopAmount}>
+                  {item.val !== 0 ? `${currencySymbol}${Math.abs(item.val) > 1000 ? (item.val / 1000).toFixed(1) + 'K' : item.val}` : "0"}
+                </span>
+                
                 <div 
-                  onClick={() => setIsBrokerOpen(!isBrokerOpen)}
-                  className={`${isDark ? styles.inputDark : styles.inputLight} flex items-center justify-between cursor-pointer select-none`}
-                >
-                  <span className={!tradeData.broker ? "text-gray-500" : ""}>
-                    {tradeData.broker || "Select Broker"}
-                  </span>
-                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isBrokerOpen ? "rotate-180" : ""}`} />
-                </div>
-
-                {isBrokerOpen && (
-                  <div className={`absolute left-0 right-0 mt-1 rounded-xl border shadow-xl py-1 z-50 max-h-48 overflow-y-auto ${
-                    isDark ? "bg-[#111625] border-gray-700 text-gray-200" : "bg-white border-slate-200 text-slate-800"
-                  }`}>
-                    {brokers.map((b) => (
-                      <div
-                        key={b}
-                        onClick={() => {
-                          setTradeData({...tradeData, broker: b});
-                          setIsBrokerOpen(false);
-                        }}
-                        className={`px-3.5 py-2 text-xs cursor-pointer transition-colors ${
-                          tradeData.broker === b 
-                            ? "bg-emerald-500/15 text-emerald-400 font-semibold" 
-                            : isDark ? "hover:bg-gray-800/60" : "hover:bg-slate-100"
-                        }`}
-                      >
-                        {b}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                  className={styles.barFill} 
+                  style={{ 
+                    height: `${Math.max(heightPercent, 10)}%`, 
+                    background: isProfit 
+                      ? "linear-gradient(180deg, #10b981 0%, rgba(16, 185, 129, 0.2) 100%)" 
+                      : "linear-gradient(180deg, #ef4444 0%, rgba(239, 68, 68, 0.2) 100%)",
+                    boxShadow: isProfit ? "0 0 12px rgba(16, 185, 129, 0.25)" : "0 0 12px rgba(239, 68, 68, 0.25)"
+                  }}
+                ></div>
+                <small className={styles.barLabel}>{item.label}</small>
               </div>
+            );
+          })}
+        </div>
 
-              {/* Trade Name */}
-              <div className={styles.tradeField}>
-                <label className="text-gray-400 font-medium mb-1 block">Trade</label>
-                <input 
-                  type="text" 
-                  placeholder={currentMarket === "crypto" ? "e.g. BTCUSDT / ETH" : "e.g. Nifty 11 Aug 24550 Call"}
-                  value={tradeData.tradeName}
-                  onChange={(e) => setTradeData({...tradeData, tradeName: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                />
-              </div>
-
-              {/* Quantity */}
-              <div>
-                <label className="text-gray-400 font-medium mb-1 block">Quantity</label>
-                <input 
-                  type="number" 
-                  step="any"
-                  placeholder={currentMarket === "crypto" ? "e.g. 0.001" : "e.g. 65"}
-                  value={tradeData.qty}
-                  onChange={(e) => setTradeData({...tradeData, qty: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                />
-              </div>
-
-              {/* Buy Price */}
-              <div>
-                <label className="text-gray-400 font-medium mb-1 block">Buy Price ({currencySymbol})</label>
-                <input 
-                  type="number" 
-                  step="any"
-                  placeholder="0.00"
-                  value={tradeData.buyPrice}
-                  onChange={(e) => setTradeData({...tradeData, buyPrice: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                />
-              </div>
-
-              {/* Sell Price */}
-              <div>
-                <label className="text-gray-400 font-medium mb-1 block">Sell Price ({currencySymbol})</label>
-                <input 
-                  type="number" 
-                  step="any"
-                  placeholder="0.00"
-                  value={tradeData.sellPrice}
-                  onChange={(e) => setTradeData({...tradeData, sellPrice: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                />
-              </div>
-
-              {/* Brokerage & Charges */}
-              <div>
-                <label className="text-gray-400 font-medium mb-1 block">Brokerage & Charges</label>
-                <input 
-                  type="number" 
-                  step="any"
-                  placeholder="e.g. 40"
-                  value={tradeData.brokerage}
-                  onChange={(e) => setTradeData({...tradeData, brokerage: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                />
-              </div>
-
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-2.5 pt-2">
-              <button 
-                type="button" 
-                onClick={() => setTradeData(initialTradeState)}
-                className="w-1/3 bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-rose-500/20 hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <RotateCcw className="w-3.5 h-3.5" /> Clear
-              </button>
-              <button 
-                type="submit" 
-                className="w-2/3 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2"
-              >
-                <PlusCircle className="w-4 h-4" /> Save Trade
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* 2. DEPOSIT / INVEST FORM */}
-        {activeModal === "deposit" && (
-          <form 
-            onSubmit={(e) => { 
-              e.preventDefault(); 
-              if (onSaveDeposit) onSaveDeposit(depositData); 
-              setDepositData(initialDepositState);
-            }} 
-            className="space-y-3.5 text-xs"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-gray-400 font-medium mb-1 block">Date</label>
-                <input 
-                  type="date" 
-                  value={depositData.date}
-                  onChange={(e) => setDepositData({...depositData, date: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                />
-              </div>
-              <div className="relative">
-                <label className="text-gray-400 font-medium mb-1 block">Broker</label>
-                <select 
-                  value={depositData.broker}
-                  onChange={(e) => setDepositData({...depositData, broker: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                >
-                  <option value="" disabled>Select Broker</option>
-                  {brokers.map((b) => (
-                    <option key={b} value={b}>{b}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="text-gray-400 font-medium mb-1 block">Amount ({currencySymbol})</label>
-                <input 
-                  type="number" 
-                  step="any"
-                  placeholder="Enter deposit amount"
-                  value={depositData.amount}
-                  onChange={(e) => setDepositData({...depositData, amount: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-2.5 pt-2">
-              <button 
-                type="button" 
-                onClick={() => setDepositData(initialDepositState)}
-                className="w-1/3 bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-rose-500/20 hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <RotateCcw className="w-3.5 h-3.5" /> Clear
-              </button>
-              <button 
-                type="submit" 
-                className="w-2/3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-blue-500/20 hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2"
-              >
-                <ArrowDownRight className="w-4 h-4" /> Confirm Deposit
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* 3. WITHDRAWAL FORM */}
-        {activeModal === "withdrawal" && (
-          <form 
-            onSubmit={(e) => { 
-              e.preventDefault(); 
-              if (onSaveWithdrawal) onSaveWithdrawal(withdrawalData); 
-              setWithdrawalData(initialWithdrawalState);
-            }} 
-            className="space-y-3.5 text-xs"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-gray-400 font-medium mb-1 block">Date</label>
-                <input 
-                  type="date" 
-                  value={withdrawalData.date}
-                  onChange={(e) => setWithdrawalData({...withdrawalData, date: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-gray-400 font-medium mb-1 block">Broker</label>
-                <select 
-                  value={withdrawalData.broker}
-                  onChange={(e) => setWithdrawalData({...withdrawalData, broker: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                >
-                  <option value="" disabled>Select Broker</option>
-                  {brokers.map((b) => (
-                    <option key={b} value={b}>{b}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="text-gray-400 font-medium mb-1 block">Amount ({currencySymbol})</label>
-                <input 
-                  type="number" 
-                  step="any"
-                  placeholder="Enter withdrawal amount"
-                  value={withdrawalData.amount}
-                  onChange={(e) => setWithdrawalData({...withdrawalData, amount: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-2.5 pt-2">
-              <button 
-                type="button" 
-                onClick={() => setWithdrawalData(initialWithdrawalState)}
-                className="w-1/3 bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-rose-500/20 hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <RotateCcw className="w-3.5 h-3.5" /> Clear
-              </button>
-              <button 
-                type="submit" 
-                className="w-2/3 bg-gradient-to-r from-amber-600 to-amber-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-amber-500/20 hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2"
-              >
-                <ArrowUpRight className="w-4 h-4" /> Confirm Withdrawal
-              </button>
-            </div>
-          </form>
-        )}
       </div>
     </div>
   );

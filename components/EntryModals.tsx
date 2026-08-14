@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, PlusCircle, ArrowDownRight, ArrowUpRight, RotateCcw } from "lucide-react";
+import { X, PlusCircle, ArrowDownRight, ArrowUpRight, RotateCcw, CheckCircle2, ChevronDown } from "lucide-react";
+import CTADatePicker from "@/style/CTADatePicker";
 import styles from "./EntryModals.module.css";
 
 interface EntryModalsProps {
@@ -22,6 +23,22 @@ export default function EntryModals({
   onSaveWithdrawal
 }: EntryModalsProps) {
   const [currentMarket, setCurrentMarket] = useState("share");
+  type SavedEntryType = "trade" | "deposit" | "withdrawal";
+  const [savedEntryType, setSavedEntryType] = useState<SavedEntryType | null>(null);
+  const [openBrokerDropdown, setOpenBrokerDropdown] = useState<"trade" | "deposit" | "withdrawal" | null>(null);
+
+  const formatNumber = (value: string) => {
+    if (value === "") return "";
+    const [integer, decimal] = value.split(".");
+    const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return decimal !== undefined ? `${formattedInteger}.${decimal}` : formattedInteger;
+  };
+
+  const normalizeNumber = (value: string) => {
+    const clean = value.replace(/,/g, "").replace(/[^0-9.]/g, "");
+    const [integer = "", ...decimals] = clean.split(".");
+    return decimals.length ? `${integer}.${decimals.join("")}` : integer;
+  };
 
   // Fetch current selected market and listen to changes
   useEffect(() => {
@@ -37,8 +54,8 @@ export default function EntryModals({
     return () => window.removeEventListener("marketChange", handleMarketChange);
   }, []);
 
-  // Dynamic brokers list based on market type
-  const brokers = currentMarket === "crypto" 
+  // Dynamic broker list
+  const rawBrokers = currentMarket === "crypto" 
     ? ["DeltaExchange", "XM", "CoinDCX", "Binance"] 
     : ["Bigul Algo", "Angel One", "Dhan", "Groww", "SAHI", "Lemonn", "Upstox"];
 
@@ -105,37 +122,46 @@ export default function EntryModals({
           <form 
             onSubmit={(e) => { 
               e.preventDefault(); 
-              if (onSaveTrade) onSaveTrade(tradeData); 
-              setTradeData(initialTradeState);
+              if (onSaveTrade) onSaveTrade(tradeData);
+              setTradeData({ ...initialTradeState, market: currentMarket });
+              setSavedEntryType("trade");
             }} 
             className="space-y-3.5 text-xs sm:text-sm"
           >
             <div className={styles.formGrid}>
               
-              {/* Date & Broker (Always 2 columns) */}
+              {/* Date Input with CTADatePicker */}
               <div>
                 <label className="text-gray-400 font-medium mb-1 block">Date</label>
-                <input 
-                  type="date" 
-                  value={tradeData.date}
-                  onChange={(e) => setTradeData({...tradeData, date: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
+                <CTADatePicker 
+                  selectedDate={tradeData.date}
+                  onSelectDate={(date) => setTradeData({...tradeData, date})}
+                  isDark={isDark}
+                  width="100%"
                 />
               </div>
+
+              {/* Broker Dropdown */}
               <div>
                 <label className="text-gray-400 font-medium mb-1 block">Broker</label>
-                <select 
-                  value={tradeData.broker}
-                  onChange={(e) => setTradeData({...tradeData, broker: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                >
-                  <option value="" disabled>Select Broker</option>
-                  {brokers.map((b) => (
-                    <option key={b} value={b}>{b}</option>
-                  ))}
-                </select>
+                <div className={styles.customDropdown}>
+                  <button type="button" className={`${isDark ? styles.inputDark : styles.inputLight} ${styles.dropdownTrigger}`}
+                    onClick={() => setOpenBrokerDropdown(openBrokerDropdown === "trade" ? null : "trade")}
+                    aria-expanded={openBrokerDropdown === "trade"}>
+                    <span className={tradeData.broker ? "" : styles.dropdownPlaceholder}>{tradeData.broker || "Select broker"}</span>
+                    <ChevronDown className={`${styles.dropdownChevron} ${openBrokerDropdown === "trade" ? styles.dropdownChevronOpen : ""}`} size={16} />
+                  </button>
+                  {openBrokerDropdown === "trade" && (
+                    <div className={isDark ? styles.dropdownMenuDark : styles.dropdownMenuLight}>
+                      {rawBrokers.map((broker) => (
+                        <button key={broker} type="button" className={styles.dropdownOption}
+                          onClick={() => { setTradeData({ ...tradeData, broker }); setOpenBrokerDropdown(null); }}>
+                          {broker}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Trade Name */}
@@ -155,11 +181,11 @@ export default function EntryModals({
               <div>
                 <label className="text-gray-400 font-medium mb-1 block">Quantity</label>
                 <input 
-                  type="number" 
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder={currentMarket === "crypto" ? "e.g. 0.001" : "e.g. 65"}
-                  value={tradeData.qty}
-                  onChange={(e) => setTradeData({...tradeData, qty: e.target.value})}
+                  value={formatNumber(tradeData.qty)}
+                  onChange={(e) => setTradeData({...tradeData, qty: normalizeNumber(e.target.value)})}
                   className={isDark ? styles.inputDark : styles.inputLight}
                   required
                 />
@@ -169,11 +195,11 @@ export default function EntryModals({
               <div>
                 <label className="text-gray-400 font-medium mb-1 block">Buy Price ({currencySymbol})</label>
                 <input 
-                  type="number" 
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="0.00"
-                  value={tradeData.buyPrice}
-                  onChange={(e) => setTradeData({...tradeData, buyPrice: e.target.value})}
+                  value={formatNumber(tradeData.buyPrice)}
+                  onChange={(e) => setTradeData({...tradeData, buyPrice: normalizeNumber(e.target.value)})}
                   className={isDark ? styles.inputDark : styles.inputLight}
                   required
                 />
@@ -183,11 +209,11 @@ export default function EntryModals({
               <div>
                 <label className="text-gray-400 font-medium mb-1 block">Sell Price ({currencySymbol})</label>
                 <input 
-                  type="number" 
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="0.00"
-                  value={tradeData.sellPrice}
-                  onChange={(e) => setTradeData({...tradeData, sellPrice: e.target.value})}
+                  value={formatNumber(tradeData.sellPrice)}
+                  onChange={(e) => setTradeData({...tradeData, sellPrice: normalizeNumber(e.target.value)})}
                   className={isDark ? styles.inputDark : styles.inputLight}
                   required
                 />
@@ -197,11 +223,11 @@ export default function EntryModals({
               <div>
                 <label className="text-gray-400 font-medium mb-1 block">Brokerage & Charges</label>
                 <input 
-                  type="number" 
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="e.g. 40"
-                  value={tradeData.brokerage}
-                  onChange={(e) => setTradeData({...tradeData, brokerage: e.target.value})}
+                  value={formatNumber(tradeData.brokerage)}
+                  onChange={(e) => setTradeData({...tradeData, brokerage: normalizeNumber(e.target.value)})}
                   className={isDark ? styles.inputDark : styles.inputLight}
                   required
                 />
@@ -233,52 +259,58 @@ export default function EntryModals({
           <form 
             onSubmit={(e) => { 
               e.preventDefault(); 
-              if (onSaveDeposit) onSaveDeposit(depositData); 
-              setDepositData(initialDepositState);
+              if (onSaveDeposit) onSaveDeposit(depositData);
+              setDepositData({ ...initialDepositState, market: currentMarket });
+              setSavedEntryType("deposit");
             }} 
             className="space-y-3.5 text-xs"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-gray-400 font-medium mb-1 block">Date</label>
-                <input 
-                  type="date" 
-                  value={depositData.date}
-                  onChange={(e) => setDepositData({...depositData, date: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
+                <CTADatePicker 
+                  selectedDate={depositData.date}
+                  onSelectDate={(date) => setDepositData({...depositData, date})}
+                  isDark={isDark}
+                  width="100%"
                 />
               </div>
               <div>
                 <label className="text-gray-400 font-medium mb-1 block">Broker</label>
-                <select 
-                  value={depositData.broker}
-                  onChange={(e) => setDepositData({...depositData, broker: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                >
-                  <option value="" disabled>Select Broker</option>
-                  {brokers.map((b) => (
-                    <option key={b} value={b}>{b}</option>
-                  ))}
-                </select>
+                <div className={styles.customDropdown}>
+                  <button type="button" className={`${isDark ? styles.inputDark : styles.inputLight} ${styles.dropdownTrigger}`}
+                    onClick={() => setOpenBrokerDropdown(openBrokerDropdown === "deposit" ? null : "deposit")}
+                    aria-expanded={openBrokerDropdown === "deposit"}>
+                    <span className={depositData.broker ? "" : styles.dropdownPlaceholder}>{depositData.broker || "Select broker"}</span>
+                    <ChevronDown className={`${styles.dropdownChevron} ${openBrokerDropdown === "deposit" ? styles.dropdownChevronOpen : ""}`} size={16} />
+                  </button>
+                  {openBrokerDropdown === "deposit" && (
+                    <div className={isDark ? styles.dropdownMenuDark : styles.dropdownMenuLight}>
+                      {rawBrokers.map((broker) => (
+                        <button key={broker} type="button" className={styles.dropdownOption}
+                          onClick={() => { setDepositData({ ...depositData, broker }); setOpenBrokerDropdown(null); }}>
+                          {broker}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="sm:col-span-2">
                 <label className="text-gray-400 font-medium mb-1 block">Amount ({currencySymbol})</label>
                 <input 
-                  type="number" 
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Enter deposit amount"
-                  value={depositData.amount}
-                  onChange={(e) => setDepositData({...depositData, amount: e.target.value})}
+                  value={formatNumber(depositData.amount)}
+                  onChange={(e) => setDepositData({...depositData, amount: normalizeNumber(e.target.value)})}
                   className={isDark ? styles.inputDark : styles.inputLight}
                   required
                 />
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-2.5 pt-2">
               <button 
                 type="button" 
@@ -302,52 +334,58 @@ export default function EntryModals({
           <form 
             onSubmit={(e) => { 
               e.preventDefault(); 
-              if (onSaveWithdrawal) onSaveWithdrawal(withdrawalData); 
-              setWithdrawalData(initialWithdrawalState);
+              if (onSaveWithdrawal) onSaveWithdrawal(withdrawalData);
+              setWithdrawalData({ ...initialWithdrawalState, market: currentMarket });
+              setSavedEntryType("withdrawal");
             }} 
             className="space-y-3.5 text-xs"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-gray-400 font-medium mb-1 block">Date</label>
-                <input 
-                  type="date" 
-                  value={withdrawalData.date}
-                  onChange={(e) => setWithdrawalData({...withdrawalData, date: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
+                <CTADatePicker 
+                  selectedDate={withdrawalData.date}
+                  onSelectDate={(date) => setWithdrawalData({...withdrawalData, date})}
+                  isDark={isDark}
+                  width="100%"
                 />
               </div>
               <div>
                 <label className="text-gray-400 font-medium mb-1 block">Broker</label>
-                <select 
-                  value={withdrawalData.broker}
-                  onChange={(e) => setWithdrawalData({...withdrawalData, broker: e.target.value})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                >
-                  <option value="" disabled>Select Broker</option>
-                  {brokers.map((b) => (
-                    <option key={b} value={b}>{b}</option>
-                  ))}
-                </select>
+                <div className={styles.customDropdown}>
+                  <button type="button" className={`${isDark ? styles.inputDark : styles.inputLight} ${styles.dropdownTrigger}`}
+                    onClick={() => setOpenBrokerDropdown(openBrokerDropdown === "withdrawal" ? null : "withdrawal")}
+                    aria-expanded={openBrokerDropdown === "withdrawal"}>
+                    <span className={withdrawalData.broker ? "" : styles.dropdownPlaceholder}>{withdrawalData.broker || "Select broker"}</span>
+                    <ChevronDown className={`${styles.dropdownChevron} ${openBrokerDropdown === "withdrawal" ? styles.dropdownChevronOpen : ""}`} size={16} />
+                  </button>
+                  {openBrokerDropdown === "withdrawal" && (
+                    <div className={isDark ? styles.dropdownMenuDark : styles.dropdownMenuLight}>
+                      {rawBrokers.map((broker) => (
+                        <button key={broker} type="button" className={styles.dropdownOption}
+                          onClick={() => { setWithdrawalData({ ...withdrawalData, broker }); setOpenBrokerDropdown(null); }}>
+                          {broker}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="sm:col-span-2">
                 <label className="text-gray-400 font-medium mb-1 block">Amount ({currencySymbol})</label>
                 <input 
-                  type="number" 
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Enter withdrawal amount"
-                  value={withdrawalData.amount}
-                  onChange={(e) => setWithdrawalData({...withdrawalData, amount: e.target.value})}
+                  value={formatNumber(withdrawalData.amount)}
+                  onChange={(e) => setWithdrawalData({...withdrawalData, amount: normalizeNumber(e.target.value)})}
                   className={isDark ? styles.inputDark : styles.inputLight}
                   required
                 />
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-2.5 pt-2">
               <button 
                 type="button" 
@@ -364,6 +402,55 @@ export default function EntryModals({
               </button>
             </div>
           </form>
+        )}
+
+        {savedEntryType && (
+          <div className={styles.successOverlay}>
+            <div
+              className={isDark ? styles.successDialogDark : styles.successDialogLight}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="entry-saved-title"
+            >
+              <div className={styles.successIcon}>
+                <CheckCircle2 size={34} />
+              </div>
+
+              <h3 id="entry-saved-title">
+                {savedEntryType === "trade" && "Trade Saved"}
+                {savedEntryType === "deposit" && "Deposit Saved"}
+                {savedEntryType === "withdrawal" && "Withdrawal Saved"}
+              </h3>
+
+              <p>
+                {savedEntryType === "trade" && "Your trade has been saved successfully."}
+                {savedEntryType === "deposit" && "Your deposit has been saved successfully."}
+                {savedEntryType === "withdrawal" && "Your withdrawal has been saved successfully."}
+              </p>
+
+              <div className={styles.successActions}>
+                <button
+                  type="button"
+                  className={styles.addMoreButton}
+                  onClick={() => setSavedEntryType(null)}
+                >
+                  <PlusCircle size={17} />
+                  More Entry
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.closeSuccessButton}
+                  onClick={() => {
+                    setSavedEntryType(null);
+                    onClose();
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
