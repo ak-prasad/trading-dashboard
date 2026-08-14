@@ -40,7 +40,7 @@ export default function EntryModals({
   // Dynamic brokers list based on market type
   const brokers = currentMarket === "crypto" 
     ? ["DeltaExchange", "XM", "CoinDCX", "Binance"] 
-    : ["Algo", "Angel One", "Dhan", "Groww", "SAHI", "Lemonn", "Upstox"];
+    : ["Bigul Algo", "Angel One", "Dhan", "Groww", "SAHI", "Lemonn", "Upstox"];
 
   // Dynamic currency symbol
   const currencySymbol = currentMarket === "crypto" ? "$" : "₹";
