@@ -1,6 +1,6 @@
 // Har broker ka ek fixed aur individual color yahan define kar diya gaya hai
 export const BROKER_COLOR_MAP: Record<string, string> = {
-  "Algo": "#06b6d4",     
+  "Bigul Algo": "#06b6d4",     
   "Angel One": "#3b82f6",  
   "Dhan": "#eab308",       
   "Groww": "#10b981",    
