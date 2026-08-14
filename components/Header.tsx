@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { LineChart, Calendar as CalendarIcon, Sun, Moon, Laptop, ChevronDown, Menu, X, Layers } from "lucide-react";
+import { Calendar as CalendarIcon, Sun, Moon, Laptop, ChevronDown, Menu, X, Layers } from "lucide-react";
 import { useTheme } from "@/components/Providers";
+import Image from "next/image"; // Next.js ka optimized image component
 import styles from "./Header.module.css";
 
 interface HeaderProps {
@@ -41,15 +42,20 @@ export default function Header({ isDark, mobileMenuOpen, setMobileMenuOpen }: He
           {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
         </button>
         
-        <div className="flex items-center gap-3">
-          <div className="bg-gradient-to-tr from-emerald-500 to-cyan-500 p-2.5 rounded-xl text-white shadow-lg shadow-emerald-500/20">
-            <LineChart className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="font-extrabold text-sm tracking-wide leading-tight">MY TRADING</h1>
-            <p className="text-[10px] text-emerald-400 font-bold tracking-widest leading-tight">DASHBOARD</p>
-          </div>
-        </div>
+       <div className="flex items-center gap-3">
+  {/* Direct HTML img tag for instant load */}
+  <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-emerald-500/20 bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center p-0.5">
+    <img 
+      src="/logo.png" 
+      alt="Logo" 
+      className="w-full h-full object-cover rounded-lg"
+    />
+  </div>
+  <div>
+    <h1 className="font-extrabold text-sm tracking-wide leading-tight">MY TRADING</h1>
+    <p className="text-[10px] text-emerald-400 font-bold tracking-widest leading-tight">DASHBOARD</p>
+  </div>
+</div>
       </div>
 
       <div className="flex items-center gap-3">
