@@ -52,7 +52,7 @@ export default function Header({ isDark, mobileMenuOpen, setMobileMenuOpen }: He
           </div>
           <div>
            <h1 className="font-extrabold text-base md:text-lg tracking-wide leading-tight">MY TRADING</h1>
-           <p className="text-[10px] text-emerald-400 font-bold tracking-widest leading-tight">DASHBOARD</p>
+           <p className="text-[12px] text-emerald-400 font-bold tracking-widest leading-tight">DASHBOARD</p>
           </div>
         </div>
       </div>
