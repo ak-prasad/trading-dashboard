@@ -83,9 +83,6 @@
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
 }
 
-.calender{
-  padding-top: 20px;
-}
 .calendarHeader {
   display: flex;
   align-items: center;
