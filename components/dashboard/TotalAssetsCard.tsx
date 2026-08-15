@@ -1,6 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import styles from "./TotalAssetsCard.module.css";
-
+import { getBrokerColor,  } from "@/utils/brokerColors";
 
 interface TotalAssetsCardProps {
   isDark: boolean;
@@ -8,7 +8,7 @@ interface TotalAssetsCardProps {
   totalInvest: number;
   totalInvestPercentage: string;
   topBrokers: [string, number][];
-  colorsList: string[];
+  colorsList: string[]; // Agar parent se pass ho raha hai toh rakhein, warna optional bana sakte hain
 }
 
 export default function TotalAssetsCard({
@@ -17,7 +17,6 @@ export default function TotalAssetsCard({
   totalInvest,
   totalInvestPercentage,
   topBrokers,
-  colorsList,
 }: TotalAssetsCardProps) {
   return (
     <div className={styles.leftColumn}>
@@ -37,12 +36,13 @@ export default function TotalAssetsCard({
           <div className={styles.distributionTitle}>Brokers Breakdown (Deposits)</div>
           
           <div className={styles.progressBarWrapper}>
-            {topBrokers.map(([broker, amt], idx) => {
+            {topBrokers.map(([broker, amt]) => {
               const percentage = totalInvest > 0 ? (amt / totalInvest) * 100 : 0;
+              const brokerColor = getBrokerColor(broker); // Broker specific color from utility
               return (
                 <div 
                   key={broker} 
-                  style={{ width: `${percentage}%`, backgroundColor: colorsList[idx % colorsList.length] }}
+                  style={{ width: `${percentage}%`, backgroundColor: brokerColor }}
                 ></div>
               );
             })}
@@ -50,13 +50,16 @@ export default function TotalAssetsCard({
 
           <div className={styles.distributionLegend}>
             {topBrokers.length > 0 ? (
-              topBrokers.map(([broker, amt], idx) => (
-                <div className={styles.legendItem} key={broker}>
-                  <span style={{ backgroundColor: colorsList[idx % colorsList.length] }} className={styles.dotStock}></span> 
-                  {broker} 
-                  <span className={styles.legendVal}>{currencySymbol}{amt.toLocaleString()}</span>
-                </div>
-              ))
+              topBrokers.map(([broker, amt]) => {
+                const brokerColor = getBrokerColor(broker); // Broker specific color from utility
+                return (
+                  <div className={styles.legendItem} key={broker}>
+                    <span style={{ backgroundColor: brokerColor }} className={styles.dotStock}></span> 
+                    {broker} 
+                    <span className={styles.legendVal}>{currencySymbol}{amt.toLocaleString()}</span>
+                  </div>
+                );
+              })
             ) : (
               <div className={styles.emptyBrokerText}>No broker deposit records found</div>
             )}

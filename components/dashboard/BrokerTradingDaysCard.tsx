@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
 import styles from "./BrokerTradingDaysCard.module.css";
-import { BROKER_COLOR_MAP, globalColorsList } from "@/utils/brokerColors";
+import { getBrokerColor } from "@/utils/brokerColors";
 import { ALL_BROKERS } from "@/utils/brokersList";
 
 interface BrokerDaysProps {
   isDark: boolean;
   allData: any[];
-  colorsList: string[];
+  colorsList?: string[];
 }
 
 export default function BrokerTradingDaysCard({
@@ -17,6 +17,7 @@ export default function BrokerTradingDaysCard({
 }: BrokerDaysProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // Centralized list se sabhi brokers fetch kar rahe hain
   const predefinedBrokers = ALL_BROKERS;
   
   const allUniqueDates = new Set<string>();
@@ -71,9 +72,8 @@ export default function BrokerTradingDaysCard({
     const daysSet = brokerDaysMap[broker];
     const days = daysSet ? daysSet.size : 0;
     
-    const cList = colorsList || [];
-    const gList = globalColorsList || [];
-    const color = BROKER_COLOR_MAP[broker] || cList[idx % (cList.length || 1)] || gList[idx % (gList.length || 1)] || "#10b981";
+    // Direct getBrokerColor utility ka use for precise and fallback mapping
+    const color = getBrokerColor(broker, idx);
 
     return {
       broker,
@@ -104,7 +104,7 @@ export default function BrokerTradingDaysCard({
     const labelRadius = 0.82;
     const largeArcFlag = share > 0.5 ? 1 : 0;
 
-    // FIX: Perfect center-aligned circle for 100% single broker using two safe half-arcs
+    // Perfect center-aligned circle for 100% single broker using two safe half-arcs
     const pathData = brokerData.length === 1 
       ? `M 0 -1 A 1 1 0 1 1 0 1 A 1 1 0 1 1 0 -1 Z` 
       : `M ${startX} ${startY} A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY} L 0 0 Z`;
@@ -178,7 +178,6 @@ export default function BrokerTradingDaysCard({
               ) : null
             )}
 
-            {/* This renders the black center hole over the wedges */}
             <circle className={styles.donutHole} cx="0" cy="0" r="0.63" />
           </svg>
 
