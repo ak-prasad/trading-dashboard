@@ -1,6 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 import styles from "./TotalAssetsCard.module.css";
 
+
 interface TotalAssetsCardProps {
   isDark: boolean;
   currencySymbol: string;

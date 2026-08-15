@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
 import styles from "./BrokerTradingDaysCard.module.css";
 import { BROKER_COLOR_MAP, globalColorsList } from "@/utils/brokerColors";
+import { ALL_BROKERS } from "@/utils/brokersList";
 
 interface BrokerDaysProps {
   isDark: boolean;
@@ -16,8 +17,7 @@ export default function BrokerTradingDaysCard({
 }: BrokerDaysProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Added Bigul Algo explicitly to prevent any color mapping miss
-  const predefinedBrokers = [" Bigul Algo", "Angel One", "Dhan", "Groww", "SAHI", "Lemonn", "Upstox", "DeltaExchange", "XM", "CoinDCX", "Binance"];
+  const predefinedBrokers = ALL_BROKERS;
   
   const allUniqueDates = new Set<string>();
   const brokerDaysMap: Record<string, Set<string>> = {};

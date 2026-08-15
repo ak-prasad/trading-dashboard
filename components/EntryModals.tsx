@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { X, PlusCircle, ArrowDownRight, ArrowUpRight, RotateCcw, CheckCircle2, ChevronDown } from "lucide-react";
 import CTADatePicker from "@/style/CTADatePicker";
 import styles from "./EntryModals.module.css";
+import { getBrokersByMarket } from "@/utils/brokersList";
 
 interface EntryModalsProps {
   activeModal: "addTrade" | "deposit" | "withdrawal" | null;
@@ -54,10 +55,8 @@ export default function EntryModals({
     return () => window.removeEventListener("marketChange", handleMarketChange);
   }, []);
 
-  // Dynamic broker list
-  const rawBrokers = currentMarket === "crypto" 
-    ? ["DeltaExchange", "XM", "CoinDCX", "Binance"] 
-    : ["Bigul Algo", "Angel One", "Dhan", "Groww", "SAHI", "Lemonn", "Upstox"];
+// Dynamic broker list using centralized utility
+  const rawBrokers = getBrokersByMarket(currentMarket);
 
   // Dynamic currency symbol
   const currencySymbol = currentMarket === "crypto" ? "$" : "₹";
@@ -108,16 +107,16 @@ export default function EntryModals({
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-gray-800/40 mb-4">
           <h3 className="font-bold text-sm tracking-wide">
-            {activeModal === "addTrade" && `New Trade Entry (${currentMarket.toUpperCase()})`}
-            {activeModal === "deposit" && `Deposit / Invest Funds (${currentMarket.toUpperCase()})`}
-            {activeModal === "withdrawal" && `Withdraw Funds (${currentMarket.toUpperCase()})`}
+            {activeModal === "addTrade" && `New Trade Entry (${currentMarket.toUpperCase()} Market)`}
+            {activeModal === "deposit" && `Deposit / Invest Funds (${currentMarket.toUpperCase()} Market)`}
+            {activeModal === "withdrawal" && `Withdraw Funds (${currentMarket.toUpperCase()} Market)`}
           </h3>
           <button onClick={onClose} className="p-1 rounded-lg text-gray-400 hover:text-white cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* 1. ADD TRADE FORM */}
+       {/* 1. ADD TRADE FORM */}
         {activeModal === "addTrade" && (
           <form 
             onSubmit={(e) => { 
@@ -128,7 +127,7 @@ export default function EntryModals({
             }} 
             className="space-y-3.5 text-xs sm:text-sm"
           >
-            <div className={styles.formGrid}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               
               {/* Date Input with CTADatePicker */}
               <div>
@@ -164,8 +163,8 @@ export default function EntryModals({
                 </div>
               </div>
 
-              {/* Trade Name */}
-              <div className={styles.tradeField}>
+              {/* Trade Name (Full width on small screens if needed, ya baaki fields ki tarah set karein) */}
+              <div className="sm:col-span-2">
                 <label className="text-gray-400 font-medium mb-1 block">Trade</label>
                 <input 
                   type="text" 
@@ -186,6 +185,20 @@ export default function EntryModals({
                   placeholder={currentMarket === "crypto" ? "e.g. 0.001" : "e.g. 65"}
                   value={formatNumber(tradeData.qty)}
                   onChange={(e) => setTradeData({...tradeData, qty: normalizeNumber(e.target.value)})}
+                  className={isDark ? styles.inputDark : styles.inputLight}
+                  required
+                />
+              </div>
+
+              {/* Brokerage & Charges */}
+              <div>
+                <label className="text-gray-400 font-medium mb-1 block">Brokerage & Charges</label>
+                <input 
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="e.g. 40"
+                  value={formatNumber(tradeData.brokerage)}
+                  onChange={(e) => setTradeData({...tradeData, brokerage: normalizeNumber(e.target.value)})}
                   className={isDark ? styles.inputDark : styles.inputLight}
                   required
                 />
@@ -214,20 +227,6 @@ export default function EntryModals({
                   placeholder="0.00"
                   value={formatNumber(tradeData.sellPrice)}
                   onChange={(e) => setTradeData({...tradeData, sellPrice: normalizeNumber(e.target.value)})}
-                  className={isDark ? styles.inputDark : styles.inputLight}
-                  required
-                />
-              </div>
-
-              {/* Brokerage & Charges */}
-              <div>
-                <label className="text-gray-400 font-medium mb-1 block">Brokerage & Charges</label>
-                <input 
-                  type="text"
-                  inputMode="decimal"
-                  placeholder="e.g. 40"
-                  value={formatNumber(tradeData.brokerage)}
-                  onChange={(e) => setTradeData({...tradeData, brokerage: normalizeNumber(e.target.value)})}
                   className={isDark ? styles.inputDark : styles.inputLight}
                   required
                 />

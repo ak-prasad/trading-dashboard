@@ -6,6 +6,7 @@ import { useTheme } from "@/components/Providers";
 import CTADropDown from "@/style/CTADropDown";
 import styles from "./calendar.module.css";
 import { fetchWithAuth } from "@/utils/apiClient";
+import { getBrokersByMarket } from "@/utils/brokersList";
 
 export default function CalendarPage() {
   const { resolvedTheme } = useTheme();
@@ -31,11 +32,7 @@ export default function CalendarPage() {
     return () => window.removeEventListener("marketChange", updateMarketFromStorage);
   }, []);
 
-  const brokers =
-    currentMarket === "crypto"
-      ? ["DeltaExchange", "XM", "CoinDCX", "Binance"]
-      : ["Algo", "Angel One", "Dhan", "Groww", "SAHI", "Lemonn", "Upstox"];
-
+  const brokers = getBrokersByMarket(currentMarket);
   const currencySymbol = currentMarket === "crypto" ? "$" : "₹";
 
   // Fetch data with market parameter and clean non-flickering cache sync
