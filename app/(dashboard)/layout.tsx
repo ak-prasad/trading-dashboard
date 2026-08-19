@@ -19,7 +19,7 @@ export default function DashboardSharedLayout({ children }: { children: React.Re
   // State to track which specific modal is open
   const [activeModal, setActiveModal] = useState<"addTrade" | "deposit" | "withdrawal" | null>(null);
 
-  // 1. Save Trade to Google Sheets API using fetchWithAuth
+  // 1. Save Trade
   const handleSaveTrade = async (data: any) => {
     try {
       const response = await fetchWithAuth("/api/trades", {
@@ -28,18 +28,18 @@ export default function DashboardSharedLayout({ children }: { children: React.Re
         body: JSON.stringify(data),
       });
 
-      if (response && response.ok !== false) {
-        alert("Trade saved successfully to Google Sheet!");
-      } else {
-        alert("Failed to save trade.");
+      if (!response || response.ok === false) {
+        throw new Error("Failed to save trade.");
       }
+
+      return true;
     } catch (error) {
       console.error("Error saving trade:", error);
-      alert("Network error while saving trade.");
+      return false;
     }
   };
 
-  // 2. Save Deposit to Google Sheets API using fetchWithAuth
+// 2. Save Deposit
   const handleSaveDeposit = async (data: any) => {
     try {
       const response = await fetchWithAuth("/api/deposit", {
@@ -48,18 +48,18 @@ export default function DashboardSharedLayout({ children }: { children: React.Re
         body: JSON.stringify(data),
       });
 
-      if (response && response.ok !== false) {
-        alert("Deposit saved successfully to Google Sheet!");
-      } else {
-        alert("Failed to save deposit.");
+      if (!response || response.ok === false) {
+        throw new Error("Failed to save deposit.");
       }
+
+      return true;
     } catch (error) {
       console.error("Error saving deposit:", error);
-      alert("Network error while saving deposit.");
+      return false;
     }
   };
 
-  // 3. Save Withdrawal to Google Sheets API using fetchWithAuth
+// 3. Save Withdrawal
   const handleSaveWithdrawal = async (data: any) => {
     try {
       const response = await fetchWithAuth("/api/withdrawal", {
@@ -68,14 +68,14 @@ export default function DashboardSharedLayout({ children }: { children: React.Re
         body: JSON.stringify(data),
       });
 
-      if (response && response.ok !== false) {
-        alert("Withdrawal saved successfully to Google Sheet!");
-      } else {
-        alert("Failed to save withdrawal.");
+      if (!response || response.ok === false) {
+        throw new Error("Failed to save withdrawal.");
       }
+
+      return true;
     } catch (error) {
       console.error("Error saving withdrawal:", error);
-      alert("Network error while saving withdrawal.");
+      return false;
     }
   };
 

@@ -107,6 +107,33 @@
 .dropdownMenuLight .dropdownOption { color: #0f172a; }
 .dropdownOption:hover { background: rgba(16,185,129,.12); color: #34d399; }
 
+/* Live Gross / Net P&L */
+.pnlSummary {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  padding-top: 2px;
+  font-size: 12px;
+}
+
+.pnlSummary > div {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.pnlSummary span {
+  color: #94a3b8;
+}
+
+.pnlSummary strong {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pnlPositive { color: #1dd793; }
+.pnlNegative { color: #fa4d4d; }
+
 /* Custom Trade Saved dialog */
 .successOverlay {
   position: fixed;

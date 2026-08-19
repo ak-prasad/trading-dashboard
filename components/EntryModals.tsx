@@ -96,6 +96,23 @@ export default function EntryModals({
     setWithdrawalData(prev => ({ ...prev, market: currentMarket, broker: "" }));
   }, [currentMarket, activeModal]);
 
+    const toNumber = (value: string | number) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const grossPnL =
+    toNumber(tradeData.qty) *
+    (toNumber(tradeData.sellPrice) - toNumber(tradeData.buyPrice));
+
+  const netPnL = grossPnL - toNumber(tradeData.brokerage);
+
+  const formatAmount = (value: number) =>
+    value.toLocaleString("en-IN", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+
   if (!activeModal) return null;
 
   return (
@@ -232,6 +249,22 @@ export default function EntryModals({
                 />
               </div>
 
+            </div>
+
+            {/* Live P&L Summary */}
+            <div className={styles.pnlSummary}>
+              <div>
+                <span>Gross P&amp;L  : </span>
+                <strong className={grossPnL >= 0 ? styles.pnlPositive : styles.pnlNegative}>
+                  {grossPnL >= 0 ? "+" : "-"}{currencySymbol}{formatAmount(Math.abs(grossPnL))}
+                </strong>
+              </div>
+              <div>
+                <span>Net P&amp;L  : </span>
+                <strong className={netPnL >= 0 ? styles.pnlPositive : styles.pnlNegative}>
+                  {netPnL >= 0 ? "+" : "-"}{currencySymbol}{formatAmount(Math.abs(netPnL))}
+                </strong>
+              </div>
             </div>
 
             {/* Action Buttons */}
