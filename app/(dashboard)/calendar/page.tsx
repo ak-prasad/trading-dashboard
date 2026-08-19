@@ -35,6 +35,12 @@ export default function CalendarPage() {
   const brokers = getBrokersByMarket(currentMarket);
   const currencySymbol = currentMarket === "crypto" ? "$" : "₹";
 
+  const formatNumber = (value: number) => {
+  return Number(value).toLocaleString("en-IN", {
+    maximumFractionDigits: 2,
+  });
+};
+
   // Fetch data with market parameter and clean non-flickering cache sync
   useEffect(() => {
     let isMounted = true;
@@ -253,8 +259,8 @@ export default function CalendarPage() {
                   {hasData && (
                     <span className={styles.dayPnlAmount}>
                       {dayTotalPnl >= 0
-                        ? `+${dayTotalPnl}`
-                        : `${dayTotalPnl}`}
+                        ? `+${formatNumber(dayTotalPnl)}`
+                        : `-${formatNumber(Math.abs(dayTotalPnl))}`}
                     </span>
                   )}
                 </button>
