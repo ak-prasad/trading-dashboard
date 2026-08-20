@@ -323,7 +323,7 @@ export default function CalendarPage() {
                   const qty = trade[5] || "0";
                   const buyAvg = trade[6] || "0";
                   const sellAvg = trade[7] || "0";
-                  const pnl = parseFloat(trade[12]) || 0;
+                  const pnl = parseFloat(trade[11]) || 0;
 
                   const percentage =
                     parseFloat(buyAvg) > 0

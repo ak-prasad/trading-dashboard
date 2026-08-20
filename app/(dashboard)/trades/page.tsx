@@ -9,12 +9,15 @@ import {
   ShieldCheck, 
   DollarSign,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ArrowUpAZ,
+  ArrowDownAZ
 } from "lucide-react";
 import { useTheme } from "@/components/Providers";
 import CTADropDown from "@/style/CTADropDown";
 import { fetchWithAuth } from "@/utils/apiClient";
 import styles from "./trades.module.css";
+import { getBrokersByMarket } from "@/utils/brokersList";
 
 export default function TradesPage() {
   const { resolvedTheme } = useTheme();
@@ -25,6 +28,7 @@ export default function TradesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBroker, setSelectedBroker] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL"); // ALL, WIN, LOSS
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Pagination States
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,11 +48,7 @@ export default function TradesPage() {
     return () => window.removeEventListener("marketChange", updateMarketFromStorage);
   }, []);
 
-  const brokers =
-    currentMarket === "crypto"
-      ? ["DeltaExchange", "XM", "CoinDCX", "Binance"]
-      : ["Algo", "Angel One", "Dhan", "Groww", "SAHI", "Lemonn", "Upstox"];
-
+  const brokers = getBrokersByMarket(currentMarket);
   const currencySymbol = currentMarket === "crypto" ? "$" : "₹";
 
   // Fetch data with cache sync
@@ -108,11 +108,22 @@ export default function TradesPage() {
     return matchesBroker && matchesSearch && matchesStatus;
   });
 
-  // Pagination Logic
-  const totalPages = Math.ceil(filteredTrades.length / rowsPerPage) || 1;
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentTradesSlice = filteredTrades.slice(startIndex, startIndex + rowsPerPage);
+  const sortedTrades = [...filteredTrades].sort((a, b) => {
+  const dateA = new Date(a[0]).getTime();
+  const dateB = new Date(b[0]).getTime();
 
+    return sortOrder === "asc"
+      ? dateA - dateB
+      : dateB - dateA;
+  });
+
+  // Pagination Logic
+  const totalPages = Math.ceil(sortedTrades.length / rowsPerPage) || 1;
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const currentTradesSlice = sortedTrades.slice(
+    startIndex,
+    startIndex + rowsPerPage
+  );
   // Filter ya search change hone par page ko 1 par reset karein
   const handleSearchChange = (val: string) => {
     setSearchQuery(val);
@@ -223,6 +234,23 @@ export default function TradesPage() {
               Losses
             </button>
           </div>
+          
+          <button
+            type="button"
+            onClick={() => {
+              setSortOrder((prev) => prev === "asc" ? "desc" : "asc");
+              setCurrentPage(1);
+            }}
+            className={styles.sortButton}
+            title={sortOrder === "asc" ? "Ascending" : "Descending"}
+            aria-label="Sort trades"
+          >
+            {sortOrder === "asc" ? (
+              <ArrowUpAZ size={17} />
+            ) : (
+              <ArrowDownAZ size={17} />
+            )}
+          </button>
 
           <CTADropDown 
             options={brokerOptions}
@@ -250,7 +278,7 @@ export default function TradesPage() {
                     <th>Buy Avg</th>
                     <th>Sell Avg</th>
                     <th>Brokerage</th>
-                    <th>Net P&L</th>
+                    <th>Gross P&L</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -262,7 +290,7 @@ export default function TradesPage() {
                     const buyAvg = parseFloat(row[6]) || 0;
                     const sellAvg = parseFloat(row[7]) || 0;
                     const brokerage = parseFloat(row[8]) || 0;
-                    const pnl = parseFloat(row[12]) || 0;
+                    const pnl = parseFloat(row[11]) || 0;
 
                     return (
                       <tr key={idx} className={styles.tableRow}>
@@ -295,7 +323,7 @@ export default function TradesPage() {
                 const buyAvg = parseFloat(row[6]) || 0;
                 const sellAvg = parseFloat(row[7]) || 0;
                 const brokerage = parseFloat(row[8]) || 0;
-                const pnl = parseFloat(row[12]) || 0;
+                const pnl = parseFloat(row[11]) || 0;
 
                 return (
                   <div key={idx} className={isDark ? styles.mobileCardDark : styles.mobileCardLight}>
@@ -323,7 +351,7 @@ export default function TradesPage() {
                     </div>
 
                     <div className={styles.mobileCardFooter}>
-                      <span className="text-xs font-bold text-gray-400 uppercase">Net P&L</span>
+                      <span className="text-xs font-bold text-gray-400 uppercase">Gross P&L</span>
                       <span className={`${styles.pnlBadge} ${pnl >= 0 ? styles.profitBadge : styles.lossBadge}`}>
                         {pnl >= 0 ? `+${currencySymbol}${pnl.toLocaleString()}` : `-${currencySymbol}${Math.abs(pnl).toLocaleString()}`}
                       </span>
